@@ -7,7 +7,7 @@
       <v-img id="imgLogo" class="mx-auto" src="../assets/favicon.png"  max-width="11%" height="20%"></v-img>
     </v-container>
     <v-card class="mx-auto transparent" max-width="40%" flat>
-      <form v-if="!submitted" style="margin: 2%;">
+      <form v-if="!submitted" style="margin: 2%;" id="registerform">
         <v-alert
             prominent
             max-width="50%"
@@ -25,33 +25,23 @@
             </v-col>
           </v-row>
         </v-alert>
-        <!--<v-alert
-            max-width="30%"
-            class="mx-auto"
-            v-if="submitError"
-            color="red"
-            icon="mdi-account"
-            type="error"
-        >
-          {{mensajeAlertForm}}
-        </v-alert>-->
         <v-text-field
             v-model="username"
-            :error-messages="userNameErrors"
-            label="Usuario"
+            :error-messages="usernameErrors"
+            label="Nombre de usuario"
             solo
             required
             @input="$v.username.$touch()"
             @blur="$v.username.$touch()"
         ></v-text-field>
         <v-text-field
-            v-model="fullname"
-            :error-messages="fullNameErrors"
-            label="Nombre y apellido"
+            v-model="email"
+            :error-messages="emailErrors"
+            label="E-mail"
             solo
             required
-            @input="$v.fullname.$touch()"
-            @blur="$v.fullname.$touch()"
+            @input="$v.email.$touch()"
+            @blur="$v.email.$touch()"
         ></v-text-field>
         <v-text-field
             v-model="password"
@@ -77,66 +67,6 @@
             @input="$v.confirmationPassword.$touch()"
             @blur="$v.confirmationPassword.$touch()"
         ></v-text-field>
-        <v-text-field
-            v-model="email"
-            :error-messages="emailErrors"
-            label="E-mail"
-            solo
-            required
-            @input="$v.email.$touch()"
-            @blur="$v.email.$touch()"
-        ></v-text-field>
-<!--        <v-select-->
-<!--            v-model="genero"-->
-<!--            :items="generos"-->
-<!--            :error-messages="generoErrors"-->
-<!--            label="Género"-->
-<!--            solo-->
-<!--            required-->
-<!--            @change="$v.genero.$touch()"-->
-<!--            @blur="$v.genero.$touch()"-->
-<!--        ></v-select>-->
-<!--        <v-select-->
-<!--            v-model="meta"-->
-<!--            :items="metas"-->
-<!--            :error-messages="metaErrors"-->
-<!--            label="Meta"-->
-<!--            solo-->
-<!--            required-->
-<!--            @change="$v.meta.$touch()"-->
-<!--            @blur="$v.meta.$touch()"-->
-<!--        ></v-select>-->
-<!--        <v-menu-->
-<!--            ref="menu"-->
-<!--            v-model="menu"-->
-<!--            :close-on-content-click="false"-->
-<!--            transition="scale-transition"-->
-<!--            offset-y-->
-<!--            min-width="290px"-->
-<!--        >-->
-<!--          <template v-slot:activator="{ on, attrs }">-->
-<!--            <v-text-field-->
-<!--                v-model="date"-->
-<!--                :error-messages="dateErrors"-->
-<!--                label="Fecha de nacimiento"-->
-<!--                solo-->
-<!--                append-icon="mdi-calendar"-->
-<!--                readonly-->
-<!--                @input="$v.date.$touch()"-->
-<!--                @blur="$v.date.$touch()"-->
-<!--                v-bind="attrs"-->
-<!--                v-on="on"-->
-<!--            ></v-text-field>-->
-<!--          </template>-->
-<!--          <v-date-picker-->
-<!--              color="#E78200"-->
-<!--              ref="picker"-->
-<!--              v-model="date"-->
-<!--              :max="new Date().toISOString().substr(0, 10)"-->
-<!--              min="1970-01-01"-->
-<!--              @change="save"-->
-<!--          ></v-date-picker>-->
-<!--        </v-menu>-->
         <v-checkbox
             v-model="checkbox"
             :error-messages="checkboxErrors"
@@ -164,17 +94,6 @@
         </v-col>
       </v-row>
     </v-alert>
-
-    <!--<v-alert
-        v-if="submitted"
-        max-width="30%"
-        class="mx-auto"
-        v-bind:color="sendVerificationError? 'red' : 'green' "
-        icon="mdi-information"
-        type="success"
-    >
-      {{ mensajeAlertSubmitted }}
-    </v-alert>-->
 
     <v-container v-if="loading" class="text-center" >
       <v-progress-circular
@@ -212,30 +131,25 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, email, sameAs, maxLength} from 'vuelidate/lib/validators'
-import UserStore from "@/store/UserStore";
+import { auth } from '@/db'
 
 export default {
   mixins: [validationMixin],
 
   validations: {
-    username: { required, maxLength : maxLength(50) },
-    fullname : {required, maxLength : maxLength(100)},
+    username : {required, maxLength : maxLength(100)},
     password:{required, maxLength : maxLength(50)},
     confirmationPassword:{required,sameAsPassword: sameAs('password'), maxLength : maxLength(50)},
     email: { required, email, maxLength : maxLength(100) },
-    meta: {required},
-    genero: {required},
     checkbox: {
       checked (val) {
         return val
       },
     },
-    date: {required},
   },
 
   data: () => ({
     username: '',
-    fullname: '',
     password:'',
     mensajeAlertForm: '',
     mensajeAlertSubmitted: 'Se ha enviado el mail de verificacion a su casilla',
@@ -244,21 +158,7 @@ export default {
     submitted : false,
     confirmationPassword:'',
     email: '',
-    genero: null,
-    generos: [
-      'Hombre',
-      'Mujer',
-      'Otro'
-    ],
-    meta: null,
-    metas: [
-      'Bajar de peso',
-      'Ganar músculo',
-      'Ponerse en forma',
-      'No tengo una meta definida',
-    ],
     checkbox: false,
-    date: null,
     menu: false,
     showPass : false,
     showConfPass : false,
@@ -278,30 +178,11 @@ export default {
       !this.$v.checkbox.checked && errors.push('Debe confirmar para continuar!')
       return errors
     },
-    metaErrors () {
-      const errors = []
-      if (!this.$v.meta.$dirty) return errors
-      !this.$v.meta.required && errors.push('La meta es obligatoria')
-      return errors
-    },
-    generoErrors () {
-      const errors = []
-      if (!this.$v.genero.$dirty) return errors
-      !this.$v.genero.required && errors.push('El género es obligatorio')
-      return errors
-    },
-    userNameErrors () {
+    usernameErrors () {
       const errors = []
       if (!this.$v.username.$dirty) return errors
-      !this.$v.username.required && errors.push('El usuario es obligatorio')
-      !this.$v.username.maxLength && errors.push('El usuario debe tener maximo 50 caracteres')
-      return errors
-    },
-    fullNameErrors () {
-      const errors = []
-      if (!this.$v.fullname.$dirty) return errors
-      !this.$v.fullname.required && errors.push('El nombre y apellido es obligatorio')
-      !this.$v.fullname.maxLength && errors.push('El nombre y apellido debe tener maximo 100 caracteres')
+      !this.$v.username.required && errors.push('El nombre y apellido es obligatorio')
+      !this.$v.username.maxLength && errors.push('El nombre y apellido debe tener maximo 100 caracteres')
       return errors
     },
     passwordErrors () {
@@ -327,88 +208,36 @@ export default {
       !this.$v.email.maxLength && errors.push('El e-mail debe tener maximo 100 caracteres')
       return errors
     },
-    dateErrors () {
-      const errors = []
-      if (!this.$v.date.$dirty) return errors
-      !this.$v.date.required && errors.push('La fecha de nacimiento es obligatoria')
-      return errors
-    },
-    weightErrors () {
-      const errors = []
-      if (!this.$v.weight.$dirty) return errors
-      !this.$v.weight.required && errors.push('El peso es obligatorio')
-      !this.$v.weight.decimal && errors.push('El peso debe ser un número')
-      !this.$v.weight.minValue && errors.push('El peso debe ser positivo')
-      return errors
-    },
-    heightErrors () {
-      const errors = []
-      if (!this.$v.height.$dirty) return errors
-      !this.$v.height.required && errors.push('La altura es obligatoria')
-      !this.$v.height.decimal && errors.push('La altura debe ser un número')
-      !this.$v.height.minValue && errors.push('La altura debe ser positiva')
-      return errors
-    }
   },
 
   methods: {
     async submit () {
-      this.$v.$touch()
-      if (!this.$v.$invalid){
-        this.loading = true;
-        const result = await UserStore.addUser(this.username, this.fullname, this.password, this.adaptarGenero(this.genero), Date.parse(this.date), this.email, this.meta );
-        if(result){
-          this.submitted = true;
+      this.$v.$touch();
+      if ( !this.$v.$invalid) {
+        auth.createUserWithEmailAndPassword(this.email, this.password).then(cred => {
+          cred.user.updateProfile({
+            displayName: this.username
+          }).then(async () => {
+            await this.$router.push('/Home');
+          })
+        }).catch(err => {
+          this.mensajeError = err.message;
           this.loading = false;
-        }
-        else{
           this.submitError = true;
-          this.mensajeAlertForm = `Mail o usuario repetido`;
-          this.loading = false;
-        }
-
+          this.clear();
+        })
       }
     },
     async resendVerification(){
-      this.loading = true;
-      const result = await UserStore.resendVerification(this.email);
-      if(result){
-        this.mensajeAlertSubmitted = 'Se ha reenviado el mail de verificacion a su casilla';
-        this.loading = false;
-      }
-      else{
-        this.sendVerificationError= true;
-        this.mensajeAlertSubmitted = `Error en reenviar verificacion`;
-        this.loading = false;
-      }
-    },
-    adaptarGenero(genero){
-      switch (genero){
-        case 'Hombre':
-          return 'male';
-        case 'Mujer':
-          return 'female';
-        case 'Otro':
-          return 'other';
-        default:
-          return '';
-      }
     },
     clear () {
-      this.$v.$reset()
-      this.username = ''
-      this.email = ''
-      this.date = null
-      this.checkbox = false
-      this.meta = null
-      this.genero = null
-      this.password=''
-      this.confirmationPassword=''
-      this.fullname= ''
-    },
-    save (date) {
-      this.$refs.menu.save(date)
-    },
+      this.$v.reset();
+      this.username = '';
+      this.email = '';
+      this.password = '';
+      this.confirmationPassword = '';
+      this.checkbox = '';
+    }
   },
 }
 </script>
