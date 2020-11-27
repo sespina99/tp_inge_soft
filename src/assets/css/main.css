@@ -1,0 +1,19 @@
+.tituloSeccion{
+    text-align: center;
+}
+
+.tituloSeccion h1{
+    display: inline;
+}
+
+#icon{
+    margin-top: -1%;
+}
+
+.orangeElement.v-btn{
+    background-color: #E78200 !important;
+}
+
+.orangeElement.v-checkbox.v-date-picker{
+    color: #E78200;
+}
