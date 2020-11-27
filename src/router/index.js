@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import UserStore from '@/store/UserStore'
+
 
 import RutinaDetallada from '../views/RutinaDetalladaView'
 import HomeView from '../views/HomeView'
@@ -111,12 +111,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if ((to.name !== 'Login' && to.name !== 'Registro' && to.name !== 'VerificarCuenta' && to.name !== 'OlvideContraseña')
-   && UserStore.getCurrentToken() === null){
-    next({ name: 'Login' })
-  }
-  else
-    next()
+    next();
 })
 
 export default router
