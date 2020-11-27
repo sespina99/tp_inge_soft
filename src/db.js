@@ -15,9 +15,9 @@ const db = firebase.firestore();
 
 auth.onAuthStateChanged( user => {
     if (user) {
-        db.collection('users').onSnapshot(snapshot => {
-            console.log(snapshot)
-        })
+        //db.collection('users').onSnapshot(snapshot => {
+            //console.log(snapshot)
+        //})
         console.log('user logged in',  user.displayName);
     }
     else {
