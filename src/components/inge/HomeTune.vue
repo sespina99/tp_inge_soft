@@ -111,12 +111,13 @@
               <div v-html="item.text">
               </div>
             </v-card-actions>
-            <v-img  style="padding-bottom: 5%" v-if="item.image" :src="item.image"
+            <div style="padding-bottom: 1%">
+            <v-img v-if="item.image" :src="item.image"
                     aspect-ratio="1.5"
                     max-height="500"
                     contain
             ></v-img>
-
+            </div>
 
           </v-card-text>
 
