@@ -47,7 +47,7 @@
         <v-card-text style="font-size:0.8em; padding-left:0" class="pl-2" contain>
 
 
-            <v-img max-width="100%" src="../../assets/staticmap.png"></v-img>
+<!--            <v-img max-width="100%" src="../../assets/staticmap.png"></v-img>-->
 
 
 
@@ -127,7 +127,6 @@ export default {
       toggled: false,
       categories: ['Clasica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
       items: [
-        { header: 'Establecimientos' },
         {
           avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
           title: 'Jactans',
@@ -172,7 +171,6 @@ export default {
         this.artistas_link= '/ExplorarArtistas',
         this.categories= ['Clasica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
         this.items= [
-      { header: 'Establecimientos' },
       {
         avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
         title: 'Jactans',

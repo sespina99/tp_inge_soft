@@ -136,7 +136,6 @@ export default {
         this.artistas_link= '/ExplorarArtistas',
         this.categories= ['Clasica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
         this.items= [
-          { header: 'Establecimientos' },
           {
             avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
             title: 'Jactans',

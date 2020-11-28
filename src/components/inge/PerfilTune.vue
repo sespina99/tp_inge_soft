@@ -146,7 +146,7 @@
 
 
             <v-list three-line>
-              <template v-for="(item, index) in items">
+              <template v-for="(item, index) in lugares">
                 <v-subheader
                     v-if="item.header"
                     :key="item.header"
@@ -273,27 +273,27 @@ export default {
       generos: 'Deathcore, EDM, Clásica',
       acerca: 'Profesor de música con experiencia musical de 20 años, incluyendo master de composición clásica en Berklee. Poseo 5\n' +
           'años de experiencia en canto gregoriano.',
-      lugares: ['Club Araoz','Moly'],
+      lugares: [{title:'Club Araoz',date:'11/10/2020'},{title:'Club AntiDomingo',date:'04/10/2020'},{title:'Moly',date:'12/09/2020'},{title:'Club Manati',date:'5/09/2020'}],
       items: [
         {
           avatar: require('../../assets/profilePic.png'),
-          title: 'Club Manatee',
-          time: 6.66,
-          tag: 'Instituto',
+          title: 'Nicolas Cicardi',
+          time: 6,
+          tag: 'Músico',
           text: 'Holka'
         },
         {
           avatar: require('../../assets/profilePic.png'),
-          title: 'Antidomingo',
+          title: 'Nicolas Cicardi',
           time: 7,
-          tag: 'Musico',
+          tag: 'Músico',
           text: 'Holka'
         },
         {
           avatar: require('../../assets/profilePic.png'),
-          title: 'Moly',
-          time: 8.4,
-          tag: 'Musico',
+          title: 'Nicolas Cicardi',
+          time: 8,
+          tag: 'Músico',
           text: 'Holka'
         },
       ],
@@ -309,7 +309,7 @@ export default {
         this.generos = 'Deathcore, EDM, Clásica',
         this.acerca = 'Profesor de música con experiencia musical de 20 años, incluyendo master de composición clásica en Berklee. Poseo 5\n' +
             'años de experiencia en canto gregoriano.',
-        this.lugares = ['Club Araoz', 'Moly']
+        this.lugares= [{title:'Club Araoz',date:'11/10/2020'},{title:'Club AntiDomingo',date:'04/10/2020'},{title:'Moly',date:'12/09/2020'},{title:'Club Manati',date:'5/09/2020'}]
   }
 
 }
