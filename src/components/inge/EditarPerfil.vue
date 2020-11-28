@@ -24,7 +24,7 @@
           <v-text-field
               v-model="fullname"
               :error-messages="fullnameErrors"
-              label="Nombre y Apellido"
+              label="Nombre de usuario"
               solo
               required
               @input="$v.fullname.$touch()"
@@ -137,6 +137,7 @@
 <script>
 import {validationMixin} from "vuelidate";
 import {required} from "vuelidate/lib/validators";
+import { auth, db} from "@/db";
 
 export default {
   mixins: [validationMixin],
@@ -150,134 +151,67 @@ export default {
     return {
       loggedIn: true,
       profile_link: '/Perfil',
-
+      created: null,
       submitError: false,
       mensajeError: 'No se pueden actualizar tus datos en el servidor ahora mismo',
-
       currentUser: undefined,
       ref_spotify: '',
       ref_apple: '',
       ref_youtube: '',
       ref_soundcloud: '',
       fullname: '',
-      tag: 'Músico',
+      tag: '',
       tags: [
         'Músico',
         'Institución',
         'Bar Nocturno',
-          'Educación',
+        'Educación',
       ],
       menu: false,
       toggled: false,
-      nombre: 'Nicolas Cicardi',
+      nombre: '',
 
-      trabajo: 'Profesor de Piano',
-      instrumentos: 'Piano, Cello, Triángulo, Guitarra',
-      generos: 'Deathcore, EDM, Clásica',
-      acerca: 'Profesor de música con experiencia musical de 20 años, incluyendo master de composición clásica en Berklee. Poseo 5\n' +
-          'años de experiencia en canto gregoriano.',
-      lugares: ['Club Araoz','Moly'],
-      items: [
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-          title: 'Club Araoz',
-          date: '01/10/2020'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-          title: 'Moly',
-          date: '11/09/2020'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-          title: 'Obras',
-          date: '05/09/2020'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-          title: 'Luna Park',
-          date: '01/09/2020'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-          title: 'Moly',
-          date: '21/08/2020'
-        },
-      ],
+      trabajo: '',
+      instrumentos: '',
+      generos: '',
+      acerca: '',
     }
   },
   created() {
-    this.tag = 'Músico';
-    this.toggled = false;
-    this.nombre = 'Nicolas Cicardi';
-    this.tag = 'Músico'
 
-    this.trabajo= 'Profesor de Piano',
-        this.fullname = 'Nicolas Cicardi';
-        this.instrumentos= 'Piano, Cello, Triángulo, Guitarra',
-        this.generos= 'Deathcore, EDM, Clásica',
-        this.acerca= 'Profesor de música con experiencia musical de 20 años, incluyendo master de composición clásica en Berklee. Poseo 5\n' +
-            'años de experiencia en canto gregoriano.',
-        this.lugares= ['Club Araoz','Moly'],
-        this.items= [
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-            title: 'Club Araoz',
-            date: '01/10/2020'
-          },
-          { divider: true, inset: true },
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-            title: 'Moly',
-            date: '11/09/2020'
-          },
-          { divider: true, inset: true },
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-            title: 'Obras',
-            date: '05/09/2020'
-          },
-          { divider: true, inset: true },
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-            title: 'Luna Park',
-            date: '01/09/2020'
-          },
-          { divider: true, inset: true },
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-            title: 'Moly',
-            date: '21/08/2020'
-          },
-        ]
+    db.collection('users').doc( auth.currentUser.uid).get().then( (elem) =>{
+      const data = elem.data();
+      this.fullname = auth.currentUser.displayName;
+      this.trabajo = data.job;
+      this.ref_apple = data.appleMusic;
+      this.ref_soundcloud = data.soundcloud;
+      this.ref_spotify = data.spotify;
+      this.ref_youtube = data.youtube;
+      this.acerca = data.bio;
+      this.tag = data.tag;
+      this.generos = data.genres;
+      this.instrumentos = data.instruments;
+
+    }).catch( e =>{
+      this.created = e.message;
+      db.collection('users').doc(auth.currentUser.uid).set({
+        job: '',
+        tag: '',
+        instruments: '',
+        genres: '',
+        bio: '',
+        spotify: '',
+        appleMusic: '',
+        soundcloud: '',
+        youtube: ''
+      }).catch(err =>{
+        console.log(err)
+      })
+    });
+    this.toggled = false;
+
   },
   computed: {
-    getRecent () {
-      return this.items.map((t) => t = t.title);
-    },
-    userNameErrors () {
-      const errors = []
-      if (!this.$v.username.$dirty) return errors
-      !this.$v.username.required && errors.push('El nombre de usuario es obligatorio')
-      return errors
-    },
-    emailErrors () {
-      const errors = []
-      if (!this.$v.email.$dirty) return errors
-      !this.$v.email.email && errors.push('El e-mail debe ser válido')
-      !this.$v.email.required && errors.push('El e-mail es obligatorio')
-      return errors
-    },
-    metaErrors () {
-      const errors = []
-      if (!this.$v.meta.$dirty) return errors
-      !this.$v.meta.required && errors.push('La meta es obligatoria')
-      return errors
-    },
     fullnameErrors () {
       const errors = []
       if (!this.$v.fullname.$dirty) return errors
@@ -296,26 +230,24 @@ export default {
       !this.$v.acerca.required && errors.push('Acerca de no puede quedar vacio')
       return errors
     },
-    weightErrors () {
-      const errors = []
-      if (!this.$v.weight.$dirty) return errors
-      !this.$v.weight.decimal && errors.push('El peso debe ser un número, con el punto como separador decimal')
-      !this.$v.weight.minValue && errors.push('El peso mínimo soportado es de 20 kilogramos')
-      !this.$v.weight.maxValue && errors.push('El peso máximo soportado es de 500 kilogramos')
-      return errors
-    },
-    heightErrors () {
-      const errors = []
-      if (!this.$v.height.$dirty) return errors
-      !this.$v.height.decimal && errors.push('La altura debe ser un número, con el punto como separador decimal')
-      !this.$v.height.minValue && errors.push('La altura mínima soportada es de 0.7 metros')
-      !this.$v.height.maxValue && errors.push('La altura máxima soportada es de 3 metros')
-      return errors
-    }
   },
   methods: {
     async submit () {
-      await this.$router.push('/Perfil');
+      db.collection('users').doc(auth.currentUser.uid).update({
+        job: this.trabajo,
+        tag: this.tag,
+        instruments: this.instrumentos,
+        genres: this.generos,
+        bio: this.acerca,
+        spotify: this.ref_spotify,
+        appleMusic: this.ref_apple,
+        soundcloud: this.ref_soundcloud,
+        youtube: this.ref_youtube,
+      }).catch(err =>{
+        console.log(err)
+      }).then(async () =>{
+        await this.$router.push('/Perfil');
+      })
     }
   }
 }

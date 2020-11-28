@@ -37,16 +37,25 @@
             <div>
               <v-row>
               <v-col cols="1">
-                  <v-img style="size: initial" src="../../assets/spotify.png"/>
+                <a :href=this.ref_spotify v-if="this.ref_spotify.length > 0">
+                  <v-img style="size: initial" src="../../assets/spotify.png" />
+                </a>
+
               </v-col>
               <v-col cols="1">
+                <a :href="this.ref_apple" v-if="this.ref_apple.length > 0">
                   <v-img min-height="3'%" max-height="30%" style="size: initial" src="../../assets/apple.png"/>
+                </a>
               </v-col>
                 <v-col cols="1" style="padding-top: 0">
+                  <a :href="this.ref_youtube" v-if="this.ref_youtube.length > 0">
                     <v-img style="size: initial" src="../../assets/youtube.png"/>
+                  </a>
                 </v-col>
                 <v-col cols="1" style="padding-top: 0">
+                  <a :href="this.ref_soundcloud" v-if="this.ref_soundcloud.length > 0">
                     <v-img min-width="30%" max-width="80%" align="center" src="../../assets/soundcloud.png"/>
+                  </a>
                 </v-col>
               </v-row>
             </div>
@@ -256,23 +265,25 @@
 </template>
 
 <script>
+import {auth, db} from "@/db";
+
 export default {
   data() {
     return {
+      created: '',
       nuevaInstitucion: '',
       nuevaFecha: '',
       nuevaImagen: '',
       dialog: false,
       editar_link: '/EditarPerfil',
-      tag: 'Musico',
+      tag: '',
         toggled: false,
-        nombre: 'Nicolas Cicardi',
+        nombre: '',
 
-        trabajo: 'Profesor de Piano',
-      instrumentos: 'Piano, Cello, Triángulo, Guitarra',
-      generos: 'Deathcore, EDM, Clásica',
-      acerca: 'Profesor de música con experiencia musical de 20 años, incluyendo master de composición clásica en Berklee. Poseo 5\n' +
-          'años de experiencia en canto gregoriano.',
+        trabajo: '',
+      instrumentos: '',
+      generos: '',
+      acerca: '',
       lugares: [{title:'Club Araoz',date:'11/10/2020'},{title:'Club AntiDomingo',date:'04/10/2020'},{title:'Moly',date:'12/09/2020'},{title:'Club Manati',date:'5/09/2020'}],
       items: [
         {
@@ -300,16 +311,23 @@ export default {
     }
   },
   created() {
-    this.tag = 'Musico';
-    this.toggled = false;
-    this.nombre = 'Nicolas Cicardi';
+    db.collection('users').doc( auth.currentUser.uid).get().then( (elem) =>{
+      const data = elem.data();
+      this.fullname = auth.currentUser.displayName;
+      this.trabajo = data.job;
+      this.ref_apple = data.appleMusic;
+      this.ref_soundcloud = data.soundcloud;
+      this.ref_spotify = data.spotify;
+      this.ref_youtube = data.youtube;
+      this.acerca = data.bio;
+      this.tag = data.tag;
+      this.generos = data.genres;
+      this.instrumentos = data.instruments;
 
-    this.trabajo = 'Profesor de Piano',
-        this.instrumentos = 'Piano, Cello, Triángulo, Guitarra',
-        this.generos = 'Deathcore, EDM, Clásica',
-        this.acerca = 'Profesor de música con experiencia musical de 20 años, incluyendo master de composición clásica en Berklee. Poseo 5\n' +
-            'años de experiencia en canto gregoriano.',
-        this.lugares= [{title:'Club Araoz',date:'11/10/2020'},{title:'Club AntiDomingo',date:'04/10/2020'},{title:'Moly',date:'12/09/2020'},{title:'Club Manati',date:'5/09/2020'}]
+    }).catch( e =>{
+      this.created = e.message;
+    });
+    this.toggled = false;
   }
 
 }

@@ -65,7 +65,7 @@
                       Ver Perfil
                     </v-btn>
                     <v-divider class="my-3"></v-divider>
-                    <v-btn
+                    <v-btn @click="closeSession()"
                         depressed
                         rounded
                         text
@@ -93,6 +93,8 @@
 </template>
 
 <script>
+import {auth} from "@/db";
+
 export default {
   data() {
     return {
@@ -108,6 +110,13 @@ export default {
         email: 'gdonikian@itba.edu.ar'
       },
       onProfileScreen: false,
+    }
+  },
+  methods: {
+    closeSession() {
+      auth.signOut().then(async ()=>{
+        await this.$router.push('/');
+      });
     }
   }
 }
