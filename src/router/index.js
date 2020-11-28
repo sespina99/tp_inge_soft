@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+// import UserStore from '@/store/UserStore'
 
-
-import RutinaDetallada from '../views/RutinaDetalladaView'
 import HomeView from '../views/HomeView'
 import Login from '../views/LoginView'
 import Register from '../views/RegisterView'
@@ -58,11 +57,6 @@ const routes = [
     component: EditarPerfilView,
   },
   {
-    path: '/Detallada',
-    name: 'Detallada',
-    component: RutinaDetallada,
-  },
-  {
     path: '/Mensajes',
     name: 'Mensajes',
     component: PageNotFound, //Falta poner
@@ -111,7 +105,14 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    next();
+  // if (to.name === 'Login')
+  //   next({name: 'Home'})
+  // if ((to.name !== 'Login' && to.name !== 'Registro' && to.name !== 'VerificarCuenta' && to.name !== 'OlvideContraseña')
+  //  && UserStore.getCurrentToken() === null){
+  //   next({ name: 'Login' })
+  // }
+  // else
+    next()
 })
 
 export default router
