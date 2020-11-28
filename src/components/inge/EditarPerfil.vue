@@ -12,7 +12,7 @@
             </v-btn>
           </v-col>
           <v-spacer></v-spacer>
-          <v-btn style="background-color: #4AD5E1" icon router :to="editar_link">
+          <v-btn style="background-color: #4AD5E1" icon @click="submit()">
             <v-icon color="white">mdi-check</v-icon>
           </v-btn>
         </v-card-actions>
@@ -122,25 +122,6 @@
       </div>
     </v-card>
 
-    <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
-
-      <div style="height: auto">
-
-        <br>
-        <v-card-title style="padding: 0" class="pl-2" contain>
-          <div>Actividad Reciente</div>
-        </v-card-title>
-        <v-text-field
-            v-model="items"
-            label="Actividad Reciente"
-            solo
-            @input="$v.items.$touch()"
-            @blur="$v.items.$touch()"
-        ></v-text-field>
-
-
-</div>
-    </v-card>
   </v-container>
 
 </template>
@@ -166,7 +147,6 @@ export default {
       mensajeError: 'No se pueden actualizar tus datos en el servidor ahora mismo',
 
       currentUser: undefined,
-      weighting: undefined,
       ref_spotify: '',
       ref_apple: '',
       ref_youtube: '',
@@ -326,6 +306,11 @@ export default {
       return errors
     }
   },
+  methods: {
+    async submit () {
+      await this.$router.push('/Perfil');
+    }
+  }
 }
 </script>
 
