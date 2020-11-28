@@ -1,7 +1,7 @@
 <template style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0">
 
   <v-container color="black" flat style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
-    <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
+    <v-card class="mx-auto" max-width="50%" style="margin-bottom: 4%">
       <v-img src="../../assets/back.png" contain style="padding-bottom: 0"/>
 
       <div style="height: auto">
@@ -12,8 +12,8 @@
             </v-btn>
           </v-col>
           <v-spacer></v-spacer>
-          <v-btn style="background-color: #4AD5E1" icon @click="submit()">
-            <v-icon color="white">mdi-check</v-icon>
+          <v-btn style="background-color: grey;color: white" text router to="/Perfil" >
+            Cancelar
           </v-btn>
         </v-card-actions>
 
@@ -118,9 +118,17 @@
                     @blur="$v.ref_soundcloud.$touch()"
                 ></v-text-field>
           </div>
+<v-row>
+  <v-divider></v-divider>
+          <v-btn style="background-color: #4AD5E1;alignment: center;margin-bottom: 2%;color: white" text x-large width="60%" @click="submit()">
+             Confirmar cambios
+          </v-btn>
+  <v-divider></v-divider>
+</v-row>
         </v-card-text>
       </div>
     </v-card>
+
 
   </v-container>
 
@@ -160,7 +168,6 @@ export default {
           'Educación',
       ],
       menu: false,
-      editar_link: '/EditarPerfil',
       toggled: false,
       nombre: 'Nicolas Cicardi',
 
