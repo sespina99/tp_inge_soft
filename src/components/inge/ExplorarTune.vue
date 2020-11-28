@@ -125,7 +125,7 @@ export default {
       institutos_link: '/ExplorarInstitutos',
       artistas_link: '/ExplorarArtistas',
       toggled: false,
-      categories: ['Clasica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
+      categories: ['Clásica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
       items: [
         {
           avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
