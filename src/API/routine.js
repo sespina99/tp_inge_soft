@@ -73,7 +73,7 @@
 //         return result;
 //     }
 //
-//     static async modifyCycle(routineId, cycle,controller){
+//     static async modifyCycle(routineId, cycle,conntroller){
 //         return await Api.put(`${RoutineApi.url}/${routineId}/${RoutineApi.urlCycle}/${cycle.id}`, true, cycle, controller);
 //     }
 //
