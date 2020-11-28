@@ -2,13 +2,42 @@
 
   <v-container color="black" flat style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
     <v-card class="mx-auto" max-width="50%" style="margin-bottom: 4%">
-      <v-img src="../../assets/back.png" contain style="padding-bottom: 0"/>
+          <v-img src="../../assets/back.png" contain style="padding-bottom: 0">
+            <v-row>
+              <v-col></v-col>
+            </v-row>
+            <v-row>
+              <v-col></v-col>
+            </v-row>
+            <v-row>
+            <v-divider></v-divider>
+            <v-btn text style="background-color: black;color: #4AD5E1 ">
+            <v-icon color="#4AD5E1" x-large>mdi-pencil</v-icon>
+              Editar fondo
+            </v-btn>
+            <v-divider></v-divider>
+            </v-row>
+            <v-row>
+              <v-col></v-col>
+            </v-row>
+          </v-img>
+
 
       <div style="height: auto">
         <v-card-actions>
           <v-col cols="2">
             <v-btn style="padding-left: 40px" icon >
-              <v-img contain style="size: initial" src="../../assets/profilePic.png"/>
+              <v-img contain style="size: initial" src="../../assets/profilePic.png">
+                <v-row>
+                  <v-col></v-col>
+                </v-row>
+                <v-btn icon style="color: #4AD5E1 ">
+                  <v-icon color="#4AD5E1" x-large>mdi-pencil</v-icon>
+                </v-btn>
+                <v-row>
+                  <v-col></v-col>
+                </v-row>
+              </v-img>
             </v-btn>
           </v-col>
           <v-spacer></v-spacer>
