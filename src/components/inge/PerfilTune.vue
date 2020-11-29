@@ -2,14 +2,14 @@
 
     <v-container color="black" flat style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
       <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
-        <v-img src="../../assets/back.png" contain style="padding-bottom: 0"/>
+        <v-img :src="this.banner" contain style="padding-bottom: 0"/>
 
         <div style="height: auto">
           <v-card-actions>
             <v-col cols="2">
               <v-btn style="padding-left: 40px" icon >
                 <v-avatar size="100%">
-                  <v-img contain style="size: initial" src="../../assets/profilePic.png"/>
+                  <v-img contain style="size: initial" :src="this.profilePic"/>
                 </v-avatar>
 
               </v-btn>
@@ -265,7 +265,7 @@
 </template>
 
 <script>
-import {auth, db} from "@/db";
+import {auth, db, storage} from "@/db";
 
 export default {
   data() {
@@ -284,6 +284,12 @@ export default {
       instrumentos: '',
       generos: '',
       acerca: '',
+      ref_apple: '',
+      ref_soundcloud: '',
+      ref_spotify: '',
+      ref_youtube: '',
+      profilePic: '',
+      banner: '',
       lugares: [{title:'Club Araoz',date:'11/10/2020'},{title:'Club AntiDomingo',date:'04/10/2020'},{title:'Moly',date:'12/09/2020'},{title:'Club Manati',date:'5/09/2020'}],
       items: [
         {
@@ -323,9 +329,37 @@ export default {
       this.tag = data.tag;
       this.generos = data.genres;
       this.instrumentos = data.instruments;
+      this.profilePic = data.profilePic;
+      this.banner = data.banner;
 
+    }).then( async () => {
+      await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL().then( url => {
+        this.profilePic = url;
+      }).catch(err =>{
+        console.log (err.message)
+      })
+      await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').getDownloadURL().then( url => {
+        this.banner = url;
+      }).catch(err =>{
+        console.log (err.message)
+      })
     }).catch( e =>{
       this.created = e.message;
+      db.collection('users').doc(auth.currentUser.uid).set({
+        job: '',
+        tag: '',
+        instruments: '',
+        genres: '',
+        bio: '',
+        spotify: '',
+        appleMusic: '',
+        soundcloud: '',
+        youtube: '',
+        banner: '',
+        profilePic: ''
+      }).catch(err =>{
+        console.log(err)
+      })
     });
     this.toggled = false;
   }
