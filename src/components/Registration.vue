@@ -31,8 +31,8 @@
             label="Nombre de usuario"
             solo
             required
-            @input="$v.username.$touch()"
-            @blur="$v.username.$touch()"
+            @input="this.$v.username.$touch()"
+            @blur="this.$v.username.$touch()"
         ></v-text-field>
         <v-text-field
             v-model="email"
@@ -40,8 +40,8 @@
             label="E-mail"
             solo
             required
-            @input="$v.email.$touch()"
-            @blur="$v.email.$touch()"
+            @input="this.$v.email.$touch()"
+            @blur="this.$v.email.$touch()"
         ></v-text-field>
         <v-text-field
             v-model="password"
@@ -52,8 +52,8 @@
             label="Contraseña"
             solo
             required
-            @input="$v.password.$touch()"
-            @blur="$v.password.$touch()"
+            @input="this.$v.password.$touch()"
+            @blur="this.$v.password.$touch()"
         ></v-text-field>
         <v-text-field
             v-model="confirmationPassword"
@@ -64,8 +64,8 @@
             label="Confirmación contraseña"
             solo
             required
-            @input="$v.confirmationPassword.$touch()"
-            @blur="$v.confirmationPassword.$touch()"
+            @input="this.$v.confirmationPassword.$touch()"
+            @blur="this.$v.confirmationPassword.$touch()"
         ></v-text-field>
         <v-checkbox
             v-model="checkbox"
@@ -74,8 +74,8 @@
             label="Confirmo que estos son mis datos"
             required
             color="#4AD5E1"
-            @change="$v.checkbox.$touch()"
-            @blur="$v.checkbox.$touch()"
+            @change="this.$v.checkbox.$touch()"
+            @blur="this.$v.checkbox.$touch()"
         ></v-checkbox>
       </form>
     </v-card>

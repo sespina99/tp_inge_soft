@@ -52,8 +52,8 @@
               label="Nombre de usuario"
               solo
               required
-              @input="$v.fullname.$touch()"
-              @blur="$v.fullname.$touch()"
+              @input="this.$v.fullname.$touch()"
+              @blur="this.$v.fullname.$touch()"
           ></v-text-field>
         </v-card-title>
         <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
@@ -64,23 +64,23 @@
               label="Tag"
               solo
               required
-              @change="$v.tag.$touch()"
-              @blur="$v.tag.$touch()"
+              @change="this.$v.tag.$touch()"
+              @blur="this.$v.tag.$touch()"
           ></v-select>
           <v-text-field
               v-model="trabajo"
               label="Profesion"
               solo
-              @input="$v.trabajo.$touch()"
-              @blur="$v.trabajo.$touch()"
+              @input="this.$v.trabajo.$touch()"
+              @blur="this.$v.trabajo.$touch()"
           ></v-text-field>
           <h4>Instrumentos:</h4>
           <v-text-field
               v-model="instrumentos"
               label="Instrumentos"
               solo
-              @input="$v.instrumentos.$touch()"
-              @blur="$v.instrumentos.$touch()"
+              @input="this.$v.instrumentos.$touch()"
+              @blur="this.$v.instrumentos.$touch()"
           ></v-text-field>
           <h4>Géneros: </h4>
           <v-select
@@ -89,8 +89,8 @@
               label="Genero"
               solo
               required
-              @change="$v.generos.$touch()"
-              @blur="$v.generos.$touch()"
+              @change="this.$v.generos.$touch()"
+              @blur="this.$v.generos.$touch()"
           ></v-select>
           <h4>Acerca de: <br></h4>
           <v-text-field
@@ -99,8 +99,8 @@
               label="Acerca de"
               solo
               required
-              @input="$v.acerca.$touch()"
-              @blur="$v.acerca.$touch()"
+              @input="this.$v.acerca.$touch()"
+              @blur="this.$v.acerca.$touch()"
           ></v-text-field>
           <h4>Referencias: <br></h4>
           <div>
@@ -111,8 +111,8 @@
                     v-model="ref_spotify"
                     label="https://spotify.com/..."
                     solo
-                    @input="$v.ref_spotify.$touch()"
-                    @blur="$v.ref_spotify.$touch()"
+                    @input="this.$v.ref_spotify.$touch()"
+                    @blur="this.$v.ref_spotify.$touch()"
                 ></v-text-field>
               <v-col cols="1">
                 <v-img min-height="3'%" max-height="30%" style="size: initial" src="../../assets/apple.png"/>
@@ -121,8 +121,8 @@
                     v-model="ref_apple"
                     label="https://music.apple.com/ar/artist/..."
                     solo
-                    @input="$v.ref_apple.$touch()"
-                    @blur="$v.ref_apple.$touch()"
+                    @input="this.$v.ref_apple.$touch()"
+                    @blur="this.$v.ref_apple.$touch()"
                 ></v-text-field>
               <v-col cols="1" style="padding-top: 0">
                 <v-img style="size: initial" src="../../assets/youtube.png"/>
@@ -131,8 +131,8 @@
                     v-model="ref_youtube"
                     label="https://www.youtube.com/channel/..."
                     solo
-                    @input="$v.ref_youtube.$touch()"
-                    @blur="$v.ref_youtube.$touch()"
+                    @input="this.$v.ref_youtube.$touch()"
+                    @blur="this.$v.ref_youtube.$touch()"
                 ></v-text-field>
               <v-col cols="1" style="padding-top: 0">
                 <v-img min-width="30%" max-width="80%" align="center" src="../../assets/soundcloud.png"/>
@@ -141,8 +141,8 @@
                     v-model="ref_soundcloud"
                     label="https://soundcloud.com/..."
                     solo
-                    @input="$v.ref_soundcloud.$touch()"
-                    @blur="$v.ref_soundcloud.$touch()"
+                    @input="this.$v.ref_soundcloud.$touch()"
+                    @blur="this.$v.ref_soundcloud.$touch()"
                 ></v-text-field>
           </div>
 <v-row>

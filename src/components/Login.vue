@@ -27,7 +27,7 @@
             label="Email"
             solo
             required
-            @blur="$v.email.$touch()"
+            @blur="this.$v.email.$touch()"
         ></v-text-field>
         <v-text-field
             v-model="password"
@@ -39,8 +39,8 @@
             label="Contraseña"
             solo
             required
-            @input="$v.password.$touch()"
-            @blur="$v.password.$touch()"
+            @input="this.$v.password.$touch()"
+            @blur="this.$v.password.$touch()"
         ></v-text-field>
         <v-container class="text-right">
           <a id="OlvCont" href="/OlvideContraseña" >¿Olvidaste tu contraseña?</a>
