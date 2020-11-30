@@ -101,30 +101,19 @@
                               label="Nombre de Institución/Bar"
                               solo
                               required
-                              @input="$v.nuevaInstitucion.$touch()"
-                              @blur="$v.nuevaInstitucion.$touch()"
                           ></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                          <v-text-field
+                          <input type="file"  @change="uploadImage" accept="image/*"/>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-date-picker
                               v-model="nuevaFecha"
-                              label="Fecha"
                               solo
                               required
-                              @input="$v.nuevaInstitucion.$touch()"
-                              @blur="$v.nuevaInstitucion.$touch()"
-                          ></v-text-field>
+                          ></v-date-picker>
                         </v-col>
-                        <v-col cols="12">
-                          <v-text-field
-                              v-model="nuevaImagen"
-                              label="Link a imagen (opcional)"
-                              solo
-                              required
-                              @input="$v.nuevaInstitucion.$touch()"
-                              @blur="$v.nuevaInstitucion.$touch()"
-                          ></v-text-field>
-                        </v-col>
+
                       </v-row>
                     </v-container>
                   </v-card-text>
@@ -140,7 +129,7 @@
                     <v-btn
                         color="blue darken-1"
                         text
-                        @click="dialog = false"
+                        @click="this.updateActivities"
                     >
                       Guardar
                     </v-btn>
@@ -277,10 +266,9 @@ export default {
       dialog: false,
       editar_link: '/EditarPerfil',
       tag: '',
-        toggled: false,
-        nombre: '',
-
-        trabajo: '',
+      toggled: false,
+      nombre: '',
+      trabajo: '',
       instrumentos: '',
       generos: '',
       acerca: '',
@@ -290,6 +278,7 @@ export default {
       ref_youtube: '',
       profilePic: '',
       banner: '',
+      actividades: [],
       lugares: [{title:'Club Araoz',date:'11/10/2020'},{title:'Club AntiDomingo',date:'04/10/2020'},{title:'Moly',date:'12/09/2020'},{title:'Club Manati',date:'5/09/2020'}],
       items: [
         {
@@ -316,6 +305,50 @@ export default {
       ],
     }
   },
+  methods: {
+    updateActivities() {
+      this.dialog = false;
+      console.log(this.nuevaFecha);
+      db.collection('users').doc(auth.currentUser.uid).get().then( elem => {
+        const activ = elem.data().activities;
+        let len = 0;
+        if ( activ !== undefined){
+          len = activ.length
+        }
+        let auxUrl;
+        if ( this.nuevaImagen.type !== undefined){
+          storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').put(this.nuevaImagen, { contentType: this.nuevaImagen.type } ).then( () =>{
+            storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').getDownloadURL().then( url => {
+              auxUrl = url;
+            }).then(() => {
+              const aux = {
+                place: this.nuevaInstitucion,
+                date: new Date(this.nuevaFecha),
+                url: auxUrl
+              }
+              console.log(aux);
+              this.actividades.push(aux);
+              console.log(this.actividades);
+              db.collection('users').doc(auth.currentUser.uid).update({
+                activities: this.actividades
+              }).catch(err => {
+                console.log(err.message);
+              })
+            }).catch(err => {
+              console.log(err.message)
+            })
+          }).catch(err => {
+            console.log(err.message);
+          });
+        }
+      }).catch(err => {
+        console.log(err.message)
+      })
+    },
+    uploadImage( event ){
+      this.nuevaImagen = event.target.files[0];
+    }
+  },
   created() {
     db.collection('users').doc( auth.currentUser.uid).get().then( (elem) =>{
       const data = elem.data();
@@ -331,6 +364,7 @@ export default {
       this.instrumentos = data.instruments;
       this.profilePic = data.profilePic;
       this.banner = data.banner;
+      this.actividades = data.activities;
 
     }).then( async () => {
       await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL().then( url => {
@@ -356,7 +390,8 @@ export default {
         soundcloud: '',
         youtube: '',
         banner: '',
-        profilePic: ''
+        profilePic: '',
+        activities: []
       }).catch(err =>{
         console.log(err)
       })

@@ -286,7 +286,7 @@ export default {
         youtube: this.ref_youtube,
       }).catch(err =>{
         console.log(err)
-      }).then(async () =>{
+      }).then( () =>{
         if ( this.profilePic.type !== undefined){
           storage.ref('users/' + auth.currentUser.uid + '/profile.jpg' ).put(this.profilePic, { contentType: this.profilePic.type } ).catch(err => {
             console.log(err.message);
@@ -297,6 +297,8 @@ export default {
             console.log(err.message);
           });
         }
+
+      }).then( async () => {
         await this.$router.push('/Perfil');
       })
     },
