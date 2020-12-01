@@ -130,9 +130,11 @@
 
 
     <v-row>
+<v-spacer></v-spacer>
       <v-col cols="2">
-        <v-btn @click="morePost" v-if="this.hasMorePost">more posts</v-btn>
+        <v-btn style="margin-bottom: 2%;background-color: #4AD5E1;color: white" @click="morePost" v-if="this.hasMorePost">Más publicaciones</v-btn>
       </v-col>
+<v-spacer></v-spacer>
     </v-row>
 
 
