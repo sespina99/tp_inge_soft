@@ -391,7 +391,8 @@ export default {
         youtube: '',
         banner: '',
         profilePic: '',
-        activities: []
+        activities: [],
+        username: auth.currentUser.displayName
       }).catch(err =>{
         console.log(err)
       })
