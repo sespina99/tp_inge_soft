@@ -77,7 +77,7 @@
 
     <v-list three-line>
       <template v-for="item in items">
-        <v-card v-bind:key="item" class="mx-auto" max-width="50%" style="margin-bottom: 20px">
+        <v-card v-bind:key="item.text && item.time" class="mx-auto" max-width="50%" style="margin-bottom: 20px">
           <template >
 
             <v-list-item
