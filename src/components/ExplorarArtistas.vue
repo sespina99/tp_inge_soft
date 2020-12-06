@@ -31,7 +31,18 @@
         <br>
         <v-card-title style="padding: 0" class="pl-2" contain>
           <div>Explorar Artistas y Bandas Cercanas <br></div>
+          <v-spacer></v-spacer>
+          <v-text-field style="margin-right:20px" prepend-inner-icon="mdi-magnify" placeholder="Buscar"></v-text-field>
         </v-card-title>
+        <ul style="list-style: none; margin-right:20px">
+          <v-row>
+            <li v-for="category in 16" v-bind:key="category">
+              <v-col cols="1">
+                <v-btn>{{ categories[category - 1] }}</v-btn>
+              </v-col>
+            </li>
+          </v-row>
+        </ul>
         <v-card-text style="font-size:0.8em; padding-left:0" class="pl-2" contain>
 
 

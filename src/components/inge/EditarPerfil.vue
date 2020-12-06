@@ -28,7 +28,7 @@
       <br>
       <v-card-title style="padding: 0" class="pl-2" contain></v-card-title>
       <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
-        <h4>Nombre y apellido:</h4>
+        <h4>Nombre de usuario:</h4>
         <v-text-field
             v-model="fullname"
             :error-messages="fullnameErrors"

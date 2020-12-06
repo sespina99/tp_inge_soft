@@ -16,7 +16,36 @@
             <v-btn text style="alignment: center;color: white" router :to="home_link">Home</v-btn>
           </v-col>
           <v-col cols="1">
-            <v-btn left text style="alignment: center;color: white" router :to="explorar_link">Explorar</v-btn>
+            <v-menu
+                bottom
+                min-width="200px"
+                rounded
+                offset-y>
+              <template v-slot:activator="{ on }">
+                <v-btn v-on="on" left text style="alignment: center;color: white">Explorar</v-btn>
+              </template>
+              <v-card>
+                <v-list-item-content class="justify-center">
+                  <div class="mx-auto text-center">
+                    <v-btn router on to="/ExplorarArtistas"
+                           depressed
+                           rounded
+                           text
+                    >
+                      Ver Artistas
+                    </v-btn>
+                    <v-divider class="my-3"></v-divider>
+                    <v-btn router on to="/ExplorarInstitutos"
+                           depressed
+                           rounded
+                           text
+                    >
+                      Ver Lugares
+                    </v-btn>
+                  </div>
+                </v-list-item-content>
+              </v-card>
+            </v-menu>
           </v-col>
           <v-col cols="1">
             <v-btn text style="alignment: center;color: white" router :to="network_link">Network</v-btn>
@@ -49,14 +78,6 @@
               <v-card>
                 <v-list-item-content class="justify-center">
                   <div class="mx-auto text-center">
-<!--                    <v-avatar>-->
-<!--                      <v-img contain style="size: initial" src="../../assets/profilePic.png"/>-->
-<!--                    </v-avatar>-->
-<!--                    <h3>{{ user.fullName }}</h3>-->
-<!--                    <p class="caption mt-1">-->
-<!--                      {{ user.email }}-->
-<!--                    </p>-->
-<!--                    <v-divider class="my-3"></v-divider>-->
                     <v-btn router on to="/Perfil"
                         depressed
                         rounded
