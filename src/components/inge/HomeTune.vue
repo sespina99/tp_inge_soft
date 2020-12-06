@@ -48,9 +48,7 @@
           <v-card-actions style="padding-top: 0;padding-bottom: 0">
             <v-spacer></v-spacer>
             <v-col cols="2" class="mr-auto" style="padding-top: 0">
-              <v-btn >
-                <v-icon>mdi-image</v-icon> Foto/Video
-              </v-btn>
+              <input type="file" @change="uploadFiles" accept="image/*, video/*" multiple/>
             </v-col>
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
@@ -144,7 +142,7 @@
 </template>
 
 <script>
-import { auth, db} from "@/db";
+import { auth, db, storage} from "@/db";
 export default {
   data() {
     return {
@@ -157,7 +155,8 @@ export default {
       items: [],
       lastPost: null,
       endPost:null,
-      hasMorePost: true
+      hasMorePost: true,
+      postFiles: [],
     }
   },
   async beforeMount() {
@@ -174,6 +173,12 @@ export default {
     }
   },
   methods:{
+    uploadFiles(e){
+      const aux = e.target.files
+      aux.forEach((elem)=>{
+        this.postFiles.push(elem)
+      })
+    },
     async reloadData() {
       try {
         this.items = [];
@@ -206,20 +211,21 @@ export default {
     async getPosts(items){
       let post
       if(this.lastPost === null){
-        const doc = await db.collection('posts').orderBy('time', "desc").get()
+        const doc = await db.collection('posts').orderBy('pid', "desc").get()
         this.endPost = doc.docs[doc.docs.length -1]
-        post = await db.collection('posts').orderBy('time', "desc").limit(5).get()
+        post = await db.collection('posts').orderBy('pid', "desc").limit(5).get()
       }else{
-        post = await db.collection('posts').orderBy('time', "desc").startAfter( this.lastPost).limit(5).get()
+        post = await db.collection('posts').orderBy('pid', "desc").startAfter( this.lastPost).limit(5).get()
       }
       post.docs.forEach( doc =>{
           const aux = doc.data();
           db.collection('users').doc(aux.uid).get().then(async (elem)=>{
             const usr = await elem.data()
+            let avatarBD = await storage.ref('users/' + aux.uid + '/profile.jpg').getDownloadURL()
             const item = {
               text: aux.text,
               title: usr.username,
-              avatar: require('../../assets/profilePic.png'),
+              avatar: avatarBD,
               time: aux.timestr,
               date: aux.datestr,
               tag: usr.tag,
@@ -241,15 +247,36 @@ export default {
     },
     addPost(){
       const today = new Date
+      const postid = Date.now().toString()
+      let i = 0
+      this.postFiles.forEach(async (elem) => {
+        console.log('antes')
+        await storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i++).put(elem, {contentType: elem.type}).catch((e)=>{console.log(e)})
+        console.log(i)
+        console.log('despues')
+      })
+      let urlTest = []
+      i = 0
+      this.postFiles.forEach((elem) =>{
+        storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i).getDownloadURL().then((url) =>{
+          urlTest.push(url)
+        }).catch(()=>{
+          console.log(elem)
+        })
+        i++
+      })
       db.collection('posts').add({
         text: this.text,
+        pid: postid,
         time: today,
+        urls: urlTest,
         timestr: this.formatTime(today),
         datestr: this.formatDate(today),
         uid: auth.currentUser.uid
       }).catch(err =>{
         console.log(err)
       })
+      this.postFiles = []
     }
   }
 }
