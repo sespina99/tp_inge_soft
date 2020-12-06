@@ -17,6 +17,7 @@ import ExploreView from "@/views/ExploreView";
 import ExplorarArtistasView from "@/views/ExplorarArtistasView";
 import ExplorarInstitutosView from "@/views/ExplorarInstitutosView";
 import EditarPerfilView from "@/views/EditarPerfilView";
+import MensajesView from "@/views/MensajesView";
 
 Vue.use(VueRouter)
 
@@ -59,7 +60,7 @@ const routes = [
   {
     path: '/Mensajes',
     name: 'Mensajes',
-    component: PageNotFound, //Falta poner
+    component: MensajesView,
   },
   {
     path: '/ExplorarArtistas',
