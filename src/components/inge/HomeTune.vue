@@ -208,7 +208,17 @@ export default {
 
       const h = today.getHours();
       const min = today.getMinutes();
-      return `${h}:${min}`
+      let hStr = ''
+      let minStr = ''
+      if(min < 10){
+        minStr = '0'
+      }
+      minStr = minStr + min.toString()
+      if(h < 10){
+        hStr = '0'
+      }
+      hStr = hStr + h.toString()
+      return `${hStr}:${minStr}`
     },
     async getPosts(items){
       let post
@@ -249,7 +259,7 @@ export default {
     },
     addPost(){
       const today = new Date
-      const postid = Date.now().toString()
+      const postid = Date.now()
       let i = 0
       this.postFiles.forEach(async (elem) => {
         await storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i++).put(elem, {contentType: elem.type}).catch((e)=>{console.log(e)})
@@ -264,7 +274,7 @@ export default {
         })
         i++
       })
-      db.collection('posts').add({
+      db.collection('posts').doc(postid.toString()).set({
         text: this.text,
         pid: postid,
         time: today,

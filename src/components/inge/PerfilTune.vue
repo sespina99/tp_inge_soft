@@ -432,7 +432,13 @@ export default {
         activities: [],
         username: auth.currentUser.displayName,
         email: auth.currentUser.email,
-        uid: auth.currentUser.uid
+        uid: auth.currentUser.uid,
+      }).then(()=>{
+        db.collection('friends').doc(auth.currentUser.uid).set({
+          friends: [],
+          friendRequests: [],
+          pendingFriends: []
+        })
       }).catch(err =>{
         console.log(err)
       })

@@ -208,7 +208,8 @@ export default {
               const item = {
                 username: aux.username,
                 avatar: aux.profilePic,
-                genre: aux.genres
+                genre: aux.genres,
+                uid: aux.uid
               }
               user.push(item);
           }

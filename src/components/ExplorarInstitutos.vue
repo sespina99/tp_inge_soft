@@ -49,7 +49,7 @@
                     </v-col>
                     <v-col cols="3">
                       <v-list-item-title>
-                        <v-btn>
+                        <v-btn @click="addFriend(item.uid)">
                           <v-icon>mdi-forum</v-icon>
                           Contactar
                         </v-btn>
@@ -85,7 +85,7 @@ export default {
       lastUsr: null,
       endUsr: null,
       hasMoreUsr: true,
-      searchUsr: ''
+      searchUsr: '',
     }
   },
   created() {
@@ -109,6 +109,34 @@ export default {
     }
   },
   methods:{
+    async addFriend(uid){
+      try {
+        let pending
+        let request
+        const docCurrent = await db.collection('friends').doc(auth.currentUser.uid)
+        const docFriend = db.collection('friends').doc(uid)
+        docCurrent.get().then(async (elem) => {
+          const data = await elem.data()
+          pending = data.pendingFriends
+          pending.push(uid)
+        }).then(() => {
+          docCurrent.update({
+            pendingFriends: pending
+          })
+        })
+        docFriend.get().then(async (elem) => {
+          const data = await elem.data()
+          request = data.friendRequests
+          request.push(uid)
+        }).then(() => {
+          docFriend.update({
+            friendRequests: request
+          })
+        })
+      }catch(e){
+        console.log(e.message)
+      }
+    },
     async reloadData() {
       try {
         this.items = [];
@@ -138,7 +166,8 @@ export default {
           const item = {
             username: aux.username,
             avatar: aux.profilePic,
-            genre: aux.genres
+            genre: aux.genres,
+            uid: aux.uid
           }
           user.push(item);
         }
