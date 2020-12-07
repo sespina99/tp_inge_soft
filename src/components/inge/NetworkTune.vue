@@ -3,7 +3,102 @@
   <v-container color="black" flat style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
 <!--   <h1 style="text-align: center">Network</h1>-->
 
-    <v-row>
+   
+<v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
+
+      <div style="height: auto">
+
+        <br>
+        <v-card-title style="padding: 0" class="pl-2" contain>
+          <v-row>
+  <v-col cols="4">
+          <div>Solicitudes Pendientes <br></div></v-col>
+  <v-spacer></v-spacer>
+          <v-btn style="margin-right: 2%" @click="solicitudes_abierto = !solicitudes_abierto" :v-model="solicitudes_abierto">{{solicitudes_abierto?'Ocultar':'Mostrar'}}</v-btn>
+</v-row>
+        </v-card-title>
+
+        <v-card-text style="font-size:0.8em; padding-left:0" class="pl-2" contain>
+
+
+<br>
+          <v-divider v-if="solicitudes_abierto === true"></v-divider>
+          <v-list three-line v-if="solicitudes_abierto === true">
+            <template v-for="(item, index) in items">
+              <v-subheader
+                  v-if="item.header"
+                  :key="item.header"
+                  v-text="item.header"
+              ></v-subheader>
+
+              <v-divider
+                  v-else-if="item.divider"
+                  :key="index"
+                  :inset="item.inset"
+              ></v-divider>
+
+              <v-list-item
+                  v-else
+                  :key="item.title"
+              >
+                <v-avatar size="70">
+                  <v-img  :src="item.avatar"></v-img>
+                </v-avatar>
+
+                <v-list-item-content>
+                  <v-row>
+                    <v-col cols="4">
+                      <v-list-item-title ><h3 style="padding-left: 5%">{{item.title}}</h3></v-list-item-title>
+                      <v-list-item-subtitle style="padding-left: 5%">{{item.distance}} </v-list-item-subtitle>
+                    </v-col>
+                    <v-spacer></v-spacer>
+
+                   <v-spacer></v-spacer>
+                    <v-col cols="2">
+                      <v-list-item-title >
+                        <v-btn style="alignment-self: end">
+                          <v-icon>mdi-account-plus</v-icon>
+                          Agregar
+                        </v-btn>
+                      </v-list-item-title>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-list-item-title>
+                        <v-btn style="alignment-self: end">
+                          <v-icon>mdi-account-minus</v-icon>
+                          Eliminar
+                        </v-btn>
+                      </v-list-item-title>
+                    </v-col>
+                  </v-row>
+                </v-list-item-content>
+              </v-list-item>
+
+            </template>
+          </v-list>
+
+
+
+
+
+
+
+
+
+
+
+
+        </v-card-text>
+
+      </div>
+
+    </v-card>
+
+
+
+
+
+ <v-row>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
@@ -110,6 +205,7 @@ export default {
   numAAB: 1,
   data() {
     return {
+solicitudes_abierto: true,
       anuncio: '',
       numAA: 1,
       orden: ['Reciente'],
