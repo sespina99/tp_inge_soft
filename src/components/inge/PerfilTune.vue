@@ -326,9 +326,7 @@ export default {
                 date: new Date(this.nuevaFecha),
                 url: auxUrl
               }
-              console.log(aux);
               this.actividades.push(aux);
-              console.log(this.actividades);
               db.collection('users').doc(auth.currentUser.uid).update({
                 activities: this.actividades
               }).catch(err => {
@@ -350,7 +348,7 @@ export default {
     }
   },
   created() {
-    db.collection('users').doc( auth.currentUser.uid).get().then( (elem) =>{
+    db.collection('users').doc( auth.currentUser.uid ).get().then( (elem) =>{
       const data = elem.data();
       this.fullname = auth.currentUser.displayName;
       this.trabajo = data.job;

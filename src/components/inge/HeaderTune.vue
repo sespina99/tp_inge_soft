@@ -98,6 +98,7 @@
                         depressed
                         rounded
                         text
+                        @click="this.deleteAccount"
                     >
                       Eliminar Cuenta
                     </v-btn>
@@ -114,7 +115,7 @@
 </template>
 
 <script>
-import {auth} from "@/db";
+import {auth, db, storage} from "@/db";
 
 export default {
   data() {
@@ -134,6 +135,18 @@ export default {
     }
   },
   methods: {
+    deleteAccount(){
+      db.collection("users").doc(auth.currentUser.uid).delete().then( async () =>{
+        //await db.collection("posts").where("uid", "==", auth.currentUser.uid)
+        await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').delete();
+        await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').delete();
+        await auth.currentUser.delete()
+      }).catch(err => {
+        console.log(err)
+      }).finally( async () => {
+        await this.$router.push('/')
+      })
+    },
     closeSession() {
       auth.signOut().then(async ()=>{
         await this.$router.push('/');

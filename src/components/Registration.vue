@@ -218,6 +218,11 @@ export default {
           cred.user.updateProfile({
             displayName: this.username
           }).then(async () => {
+            auth.currentUser.sendEmailVerification().then( () => {
+              console.log('verification sent')
+            }).catch( err => {
+              console.log(err.message)
+            });
             await this.$router.push('/Home');
           })
         }).catch(err => {
