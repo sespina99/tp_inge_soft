@@ -134,6 +134,7 @@ export default {
       onProfileScreen: false,
     }
   },
+
   methods: {
     deleteAccount(){
       db.collection("users").doc(auth.currentUser.uid).delete().then( async () =>{

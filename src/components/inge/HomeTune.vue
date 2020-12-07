@@ -25,7 +25,7 @@
             <v-col cols="1" style="padding-bottom: 0">
               <v-btn style="padding-left: 40px;padding-right: 60px" icon large right>
                 <v-avatar size="70">
-                  <v-img  src="../../assets/profilePic.png"></v-img>
+                  <v-img  :src="this.foto"></v-img>
                 </v-avatar>
               </v-btn>
             </v-col>
@@ -157,10 +157,12 @@ export default {
       endPost:null,
       hasMorePost: true,
       postFiles: [],
+      foto: ''
     }
   },
   async beforeMount() {
     try {
+      this.foto = await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL()
       await this.getPosts(this.items);
       /*for(const item in this.items){
           item.timestr = this.formatDate(item.time)
@@ -236,7 +238,7 @@ export default {
       this.lastPost = post.docs[post.docs.length -1];
       const lastPost = this.lastPost.data()
       const endPost = this.endPost.data()
-      if(lastPost.time.nanoseconds === endPost.time.nanoseconds && lastPost.uid === endPost.uid && lastPost.text === endPost.text){
+      if(lastPost.pid === endPost.pid){
         this.hasMorePost = false;
       }
     },
@@ -250,10 +252,7 @@ export default {
       const postid = Date.now().toString()
       let i = 0
       this.postFiles.forEach(async (elem) => {
-        console.log('antes')
         await storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i++).put(elem, {contentType: elem.type}).catch((e)=>{console.log(e)})
-        console.log(i)
-        console.log('despues')
       })
       let urlTest = []
       i = 0

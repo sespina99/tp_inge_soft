@@ -12,7 +12,7 @@
         <v-card-title style="padding: 0" class="pl-2" contain>
           <div>Explorar Institutos y Bares Cercanos <br></div>
           <v-spacer></v-spacer>
-          <v-text-field style="margin-right:20px" prepend-inner-icon="mdi-magnify" placeholder="Buscar"></v-text-field>
+          <v-text-field style="margin-right:20px" prepend-inner-icon="mdi-magnify" placeholder="Buscar" v-model="searchUsr" v-on:keyup.enter="reloadData"></v-text-field>
         </v-card-title>
         <v-card-text style="font-size:0.8em; padding-left:0" class="pl-2" contain>
           <br>
@@ -36,25 +36,17 @@
                   :key="item.title"
               >
                 <v-list-item-icon>
-                  <v-img src="../assets/club.png"></v-img>
+                  <v-avatar>
+                    <v-img :src="item.avatar"></v-img>
+                  </v-avatar>
                 </v-list-item-icon>
 
                 <v-list-item-content>
                   <v-row>
                     <v-col cols="2">
-                      <v-list-item-title><h3>{{ item.title }}</h3></v-list-item-title>
-                      <v-list-item-subtitle>{{ item.distance }} km</v-list-item-subtitle>
+                      <v-list-item-title><h3>{{ item.username }}</h3></v-list-item-title>
+                      <v-list-item-subtitle>{{ item.genre }}</v-list-item-subtitle>
                     </v-col>
-                    <v-spacer></v-spacer>
-                    <v-col cols="7">
-                      <v-list-item-title>
-                        <h4>
-                          <v-icon color="black">mdi-map-marker</v-icon>
-                          {{ item.direction }}
-                        </h4>
-                      </v-list-item-title>
-                    </v-col>
-                    <v-spacer></v-spacer>
                     <v-col cols="3">
                       <v-list-item-title>
                         <v-btn>
@@ -80,6 +72,8 @@
 </template>
 
 <script>
+import {auth, db} from "@/db";
+
 export default {
   data() {
     return {
@@ -87,87 +81,79 @@ export default {
       artistas_link: '/ExplorarArtistas',
       toggled: false,
       categories: ['Clasica', 'Rock', 'Pop', 'Metal', 'Jazz', 'Cumbia', 'Trap', 'Hip Hop', 'EDM', 'Tango', 'New Age', 'Funk', 'Punk', 'Rap', 'Elevator', 'Noise'],
-      items: [
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-          title: 'Jactans',
-          distance: 1.5,
-          direction: ' Ciudad Autónoma de Buenos\n' +
-              ' Aires, AR'
-        },
-        {divider: true, inset: true},
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-          title: 'MJ Pub',
-          distance: 3.1,
-          direction: ' Ramos Mejía, AR'
-        },
-        {divider: true, inset: true},
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-          title: 'Club Manatee',
-          distance: 6.66,
-          direction: ' Moron, AR'
-        },
-        {divider: true, inset: true},
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-          title: 'Antidomingo',
-          distance: 7,
-          direction: ' Buenos Aires, AR'
-        },
-        {divider: true, inset: true},
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-          title: 'Moly',
-          distance: 8.4,
-          direction: ' Buenos Aires, AR'
-        },
-      ],
+      items: [],
+      lastUsr: null,
+      endUsr: null,
+      hasMoreUsr: true,
+      searchUsr: ''
     }
   },
   created() {
     this.toggled = false,
         this.institutos_link = '/ExplorarInstitutos',
         this.artistas_link = '/ExplorarArtistas',
-        this.categories = ['Clasica', 'Rock', 'Pop', 'Metal', 'Jazz', 'Cumbia', 'Trap', 'Hip Hop', 'EDM', 'Tango', 'New Age', 'Funk', 'Punk', 'Rap', 'Elevator', 'Noise'],
-        this.items = [
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-            title: 'Jactans',
-            distance: 1.5,
-            direction: ' Ciudad Autónoma de Buenos\n' +
-                ' Aires, AR'
-          },
-          {divider: true, inset: true},
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-            title: 'MJ Pub',
-            distance: 3.1,
-            direction: ' Ramos Mejía, AR'
-          },
-          {divider: true, inset: true},
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-            title: 'Club Manatee',
-            distance: 6.66,
-            direction: ' Moron, AR'
-          },
-          {divider: true, inset: true},
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-            title: 'Antidomingo',
-            distance: 7,
-            direction: ' Buenos Aires, AR'
-          },
-          {divider: true, inset: true},
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-            title: 'Moly',
-            distance: 8.4,
-            direction: ' Buenos Aires, AR'
-          },
-        ]
+        this.categories = ['Clasica', 'Rock', 'Pop', 'Metal', 'Jazz', 'Cumbia', 'Trap', 'Hip Hop', 'EDM', 'Tango', 'New Age', 'Funk', 'Punk', 'Rap', 'Elevator', 'Noise']
+  },
+  async beforeMount() {
+    try {
+      console.log("hola")
+      await this.getUsr(this.items);
+      /*for(const item in this.items){
+          item.timestr = this.formatDate(item.time)
+      }*/
+      console.log(this.items)
+      console.log("bien");
+    } catch (e) {
+      console.log("mal");
+      console.log(e)
+    }
+  },
+  methods:{
+    async reloadData() {
+      try {
+        this.items = [];
+        this.hasMoreUsr = true;
+        this.lastUsr = null
+        this.endUsr = null
+        await this.getUsr(this.items);
+        console.log("bien");
+      }catch(e){
+        console.log("mal");
+        console.log(e)
+      }
+    },
+    async getUsr(user){
+      let users
+      if(this.lastUsr === null){
+        const doc = await db.collection('users').where('tag','==','Institución/Bar').where('username', '>=', this.searchUsr).orderBy('username').get()
+        this.endUsr = doc.docs[doc.docs.length -1]
+        users = await db.collection('users').where('tag','==','Institución/Bar').where('username', '>=', this.searchUsr).orderBy('username').limit(5).get()
+      }else{
+        users = await db.collection('users').where('tag','==','Institución/Bar').where('username', '>=', this.searchUsr).orderBy('username').startAfter( this.lastUsr).limit(5).get()
+      }
+
+      users.docs.forEach( doc => {
+        const aux = doc.data()
+        if (aux.email !== auth.currentUser.email) {
+          const item = {
+            username: aux.username,
+            avatar: aux.profilePic,
+            genre: aux.genres
+          }
+          user.push(item);
+        }
+      });
+      this.lastUsr = users.docs[users.docs.length -1];
+      if(this.lastUsr != null){
+        const lastUsr = this.lastUsr.data()
+        const endUsr = this.endUsr.data()
+        if(lastUsr.email === endUsr.email){
+          this.hasMoreUsr = false;
+        }
+      }else{
+        console.log('es null pá')
+      }
+    },
   }
 
 }

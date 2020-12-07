@@ -178,10 +178,8 @@ export default {
       banner: '../../assets/back.png',
       tag: '',
       tags: [
-        'Músico',
-        'Institución',
-        'Bar Nocturno',
-        'Educación',
+        'Músico/Banda',
+        'Institución/Bar',
       ],
       menu: false,
       toggled: false,
@@ -259,6 +257,24 @@ export default {
   },
   methods: {
     async submit() {
+      let prof = ''
+      let ban = ''
+      if (this.profilePic.type !== undefined) {
+        await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').put(this.profilePic, {contentType: this.profilePic.type}).catch(err => {
+          console.log(err.message);
+        });
+        prof = await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL()
+        await db.collection('users').doc(auth.currentUser.uid).update({ profilePic: prof})
+      }
+      if (this.banner.type !== undefined) {
+        await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').put(this.banner, {contentType: this.banner.type}).catch(err => {
+          console.log(err.message);
+        });
+        ban = await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').getDownloadURL()
+        await db.collection('users').doc(auth.currentUser.uid).update({ banner: ban})
+
+      }
+
       db.collection('users').doc(auth.currentUser.uid).update({
         job: this.trabajo,
         tag: this.tag,
@@ -271,18 +287,6 @@ export default {
         youtube: this.ref_youtube,
       }).catch(err => {
         console.log(err)
-      }).then(() => {
-        if (this.profilePic.type !== undefined) {
-          storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').put(this.profilePic, {contentType: this.profilePic.type}).catch(err => {
-            console.log(err.message);
-          });
-        }
-        if (this.banner.type !== undefined) {
-          storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').put(this.banner, {contentType: this.banner.type}).catch(err => {
-            console.log(err.message);
-          });
-        }
-
       }).then(async () => {
         await this.$router.push('/Perfil');
       })

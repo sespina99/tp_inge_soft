@@ -144,7 +144,7 @@
 
 
             <v-list three-line>
-              <template v-for="(item, index) in lugares">
+              <template v-for="(item, index) in actividades">
                 <v-subheader
                     v-if="item.header"
                     :key="item.header"
@@ -158,18 +158,18 @@
                 ></v-divider>
 
                 <v-list-item
-                    v-else
-                    :key="item.title"
+                    v-else-if="index <= 3"
+                    :key="item.date.seconds"
                 >
                   <v-list-item-icon>
-                    <v-img src="../../assets/club.png"></v-img>
+                    <v-img :src="item.url"></v-img>
                   </v-list-item-icon>
 
                   <v-list-item-content>
                     <v-row>
                       <v-col cols="12">
-                        <v-list-item-title><h3>Performó en {{item.title}}</h3></v-list-item-title>
-                      <v-list-item-subtitle >{{item.date}}</v-list-item-subtitle>
+                        <v-list-item-title><h3>Performó en {{item.place}}</h3></v-list-item-title>
+                      <v-list-item-subtitle >{{item.datestr}}</v-list-item-subtitle>
                       </v-col>
                     </v-row>
 
@@ -212,15 +212,7 @@
                           <v-list-item-title ><h3>{{ item.title }}</h3></v-list-item-title>
                           <v-list-item-subtitle>{{ item.tag }}</v-list-item-subtitle>
                           <v-list-item-subtitle>{{ item.time }} h</v-list-item-subtitle>
-                        </v-col>
-
-                        <v-col cols="3">
-                          <v-list-item-title >
-                            <v-btn>
-                              <v-icon>mdi-forum</v-icon>
-                              Contactar
-                            </v-btn>
-                          </v-list-item-title>
+                          <v-list-item-subtitle>{{item.date}}</v-list-item-subtitle>
                         </v-col>
                       </v-row>
                     </v-list-item-content>
@@ -249,6 +241,14 @@
           </v-card-text>
         </div>
       </v-card>
+
+      <v-row>
+        <v-spacer></v-spacer>
+        <v-col cols="2">
+          <v-btn style="margin-bottom: 2%;background-color: #4AD5E1;color: white" @click="morePost" v-if="this.hasMorePost">Más publicaciones</v-btn>
+        </v-col>
+        <v-spacer></v-spacer>
+      </v-row>
     </v-container>
 
 </template>
@@ -279,33 +279,67 @@ export default {
       profilePic: '',
       banner: '',
       actividades: [],
-      lugares: [{title:'Club Araoz',date:'11/10/2020'},{title:'Club AntiDomingo',date:'04/10/2020'},{title:'Moly',date:'12/09/2020'},{title:'Club Manati',date:'5/09/2020'}],
-      items: [
-        {
-          avatar: require('../../assets/profilePic.png'),
-          title: 'Nicolas Cicardi',
-          time: 6,
-          tag: 'Músico',
-          text: 'Holka'
-        },
-        {
-          avatar: require('../../assets/profilePic.png'),
-          title: 'Nicolas Cicardi',
-          time: 7,
-          tag: 'Músico',
-          text: 'Holka'
-        },
-        {
-          avatar: require('../../assets/profilePic.png'),
-          title: 'Nicolas Cicardi',
-          time: 8,
-          tag: 'Músico',
-          text: 'Holka'
-        },
-      ],
+      items: [],
+      hasMorePost: true,
+      endPost: null,
+      lastPost: null
+    }
+  },
+  async beforeMount() {
+    try {
+      await this.getPosts(this.items);
+      /*for(const item in this.items){
+          item.timestr = this.formatDate(item.time)
+      }*/
+      console.log(this.items)
+      console.log("bien");
+    }catch(e){
+      console.log("mal");
+      console.log(e)
     }
   },
   methods: {
+    morePost(){
+      this.getPosts(this.items)
+    },
+    formatDate (today) {
+      const date = today.toISOString().substr(0, 10)
+      const [year, month, day] = date.split('-')
+      return `${day}/${month}/${year}`
+    },
+    async getPosts(items){
+      let post
+      if(this.endPost === null) {
+        const doc = await db.collection('posts').where('uid', '==',auth.currentUser.uid).orderBy('pid', "desc").get()
+        this.endPost = doc.docs[doc.docs.length -1]
+        post = await db.collection('posts').where('uid', '==',auth.currentUser.uid).orderBy('pid', "desc").limit(5).get()
+      }
+      else{
+        post = await db.collection('posts').where('uid', '==',auth.currentUser.uid).orderBy('pid', "desc").startAfter( this.lastPost).limit(5).get()
+      }
+      post.docs.forEach( doc =>{
+        const aux = doc.data();
+        db.collection('users').doc(aux.uid).get().then(async (elem)=>{
+          const usr = await elem.data()
+          let avatarBD = await storage.ref('users/' + aux.uid + '/profile.jpg').getDownloadURL()
+          const item = {
+            text: aux.text,
+            title: usr.username,
+            avatar: avatarBD,
+            time: aux.timestr,
+            date: aux.datestr,
+            tag: usr.tag,
+          }
+          items.push(item);
+        })
+      });
+      this.lastPost = post.docs[post.docs.length -1];
+      const lastPost = this.lastPost.data()
+      const endPost = this.endPost.data()
+      if(lastPost.pid === endPost.pid){
+        this.hasMorePost = false;
+      }
+    },
     updateActivities() {
       this.dialog = false;
       console.log(this.nuevaFecha);
@@ -321,16 +355,22 @@ export default {
             storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').getDownloadURL().then( url => {
               auxUrl = url;
             }).then(() => {
+              const dia = new Date(this.nuevaFecha)
               const aux = {
                 place: this.nuevaInstitucion,
-                date: new Date(this.nuevaFecha),
-                url: auxUrl
+                date: dia,
+                url: auxUrl,
+                datestr: this.formatDate(dia),
               }
               this.actividades.push(aux);
               db.collection('users').doc(auth.currentUser.uid).update({
                 activities: this.actividades
               }).catch(err => {
                 console.log(err.message);
+              }).finally(()=>{
+                this.nuevaFecha = ''
+                this.nuevaImagen = ''
+                this.nuevaInstitucion = ''
               })
             }).catch(err => {
               console.log(err.message)
@@ -390,7 +430,9 @@ export default {
         banner: '',
         profilePic: '',
         activities: [],
-        username: auth.currentUser.displayName
+        username: auth.currentUser.displayName,
+        email: auth.currentUser.email,
+        uid: auth.currentUser.uid
       }).catch(err =>{
         console.log(err)
       })

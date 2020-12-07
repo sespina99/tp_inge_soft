@@ -32,13 +32,13 @@
         <v-card-title style="padding: 0" class="pl-2" contain>
           <div>Explorar Artistas y Bandas Cercanas <br></div>
           <v-spacer></v-spacer>
-          <v-text-field style="margin-right:20px" prepend-inner-icon="mdi-magnify" placeholder="Buscar"></v-text-field>
+          <v-text-field style="margin-right:20px" prepend-inner-icon="mdi-magnify" placeholder="Buscar" v-model="searchUsr" v-on:keyup.enter="reloadData"></v-text-field>
         </v-card-title>
         <ul style="list-style: none; margin-right:20px">
           <v-row>
-            <li v-for="category in 16" v-bind:key="category">
+            <li v-for="category in categories" v-bind:key="category">
               <v-col cols="1">
-                <v-btn>{{ categories[category - 1] }}</v-btn>
+                <v-btn @click="clickBtn(category)">{{ category }}</v-btn>
               </v-col>
             </li>
           </v-row>
@@ -73,8 +73,8 @@
                 <v-list-item-content>
                   <v-row>
                     <v-col cols="4">
-                      <v-list-item-title ><h3 style="padding-left: 5%">{{item.title}}</h3></v-list-item-title>
-                      <v-list-item-subtitle style="padding-left: 5%">{{item.distance}} </v-list-item-subtitle>
+                      <v-list-item-title ><h3 style="padding-left: 5%">{{item.username}}</h3></v-list-item-title>
+                      <v-list-item-subtitle style="padding-left: 5%">{{item.genre}} </v-list-item-subtitle>
                     </v-col>
                     <v-spacer></v-spacer>
 
@@ -111,103 +111,122 @@
 
     </v-card>
 
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols="2">
+        <v-btn style="margin-bottom: 2%;background-color: #4AD5E1;color: white" @click="moreUsr" v-if="this.hasMoreUsr">Más usuarios</v-btn>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
+
   </v-container>
 
 </template>
 
 <script>
+import {db, auth} from "@/db";
+
 export default {
   numAAB: 1,
   data() {
     return {
       anuncio: '',
       numAA: 1,
-      orden: ['Reciente','Nombre'],
+      orden: ['Reciente', 'Nombre'],
       toggled: false,
-      categories: ['Clasica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
-      items: [
-        {
-          avatar: require("../assets/p1.png"),
-          title: 'Lisa Gerrard',
-          distance: 'Musico',
-          direction: ' Ciudad Autónoma de Buenos\n' +
-              ' Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-          title: 'Gonzalo Sintardi',
-          distance: 'Dueño de Bar Moly',
-          direction: ' Ramos Mejía, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-          title: 'Domingo Santaris',
-          distance: 'Dueño de Bar Antidomingo',
-          direction: ' Moron, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-          title: 'Carla Gardel',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-          title: 'Sofia Martinez',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../assets/p5.png"),
-          title: 'Mariela Gomez',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../assets/p7.png"),
-          title: 'Brendan Perry ',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../assets/p8.png"),
-          title: 'Maria Santana',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../assets/p9.png"),
-          title: 'Dastona Gonikian',
-          distance: 'Directora de Conservatorio Astor Piazzolla',
-          direction: ' Buenos Aires, AR'
-        },
-      ],
-      methods: {
-        getImg(inf) {
-          switch (inf) {
-            case 1: return '../../p1.png';
-            case 2: return '../../p2.png';
-            case 3: return '../../p3.png';
-            case 4: return '../../p4.png';
-            case 5: return '../../p5.png';
-            case 6: return '../../p5.png';
-            case 7: return '../../p7.png';
-            case 8: return '../../p8.png';
-            case 9: return '../../p9.png';
-
-          }
-        }
-      }
+      categories: ['Clasica', 'Rock', 'Pop', 'Metal', 'Jazz', 'Cumbia', 'Trap', 'Hip Hop', 'EDM', 'Tango', 'New Age', 'Funk', 'Punk', 'Rap', 'Elevator', 'Noise'],
+      items: [],
+      lastUsr: null,
+      endUsr: null,
+      hasMoreUsr: true,
+      cat: null,
+      searchUsr: ''
     }
   },
+  async beforeMount() {
+    try {
+      console.log("hola")
+      await this.getUsr(this.items);
+      /*for(const item in this.items){
+          item.timestr = this.formatDate(item.time)
+      }*/
+      console.log(this.items)
+      console.log("bien");
+    } catch (e) {
+      console.log("mal");
+      console.log(e)
+    }
+  },
+      methods: {
+        async reloadData() {
+          try {
+            this.items = [];
+            this.hasMoreUsr = true;
+            this.lastUsr = null
+            this.endUsr = null
+            await this.getUsr(this.items);
+            console.log("bien");
+          }catch(e){
+            console.log("mal");
+            console.log(e)
+          }
+        },
+        moreUsr(){
+          this.getUsr(this.items)
+        },
+        clickBtn(a){
+          console.log(a)
+          if(a !== this.cat){
+            this.cat = a
+          }else{
+            this.cat = null
+          }
+          this.reloadData()
+        },
+        async getUsr(user){
+          let users
+          if(this.cat === null){
+            if(this.lastUsr === null){
+              const doc = await db.collection('users').where('tag','==','Músico/Banda').where('username', '>=', this.searchUsr).orderBy('username').get()
+              this.endUsr = doc.docs[doc.docs.length -1]
+              users = await db.collection('users').where('tag','==','Músico/Banda').where('username', '>=', this.searchUsr).orderBy('username').limit(5).get()
+            }else{
+              users = await db.collection('users').where('tag','==','Músico/Banda').where('username', '>=', this.searchUsr).orderBy('username').startAfter( this.lastUsr).limit(5).get()
+            }
+          }else{
+            if(this.lastUsr === null){
+              const doc = await db.collection('users').where('tag','==','Músico/Banda').where('username', '>=', this.searchUsr).where('genres', '==',this.cat).orderBy('username').get()
+              this.endUsr = doc.docs[doc.docs.length -1]
+              users = await db.collection('users').where('tag','==','Músico/Banda').where('username', '>=', this.searchUsr).where('genres', '==',this.cat).orderBy('username').limit(5).get()
+            }else{
+              users = await db.collection('users').where('tag','==','Músico/Banda').where('username', '>=', this.searchUsr).where('genres', '==',this.cat).orderBy('username').startAfter( this.lastUsr).limit(5).get()
+            }
+          }
+          users.docs.forEach( doc => {
+            const aux = doc.data()
+            if (aux.email !== auth.currentUser.email) {
+              const item = {
+                username: aux.username,
+                avatar: aux.profilePic,
+                genre: aux.genres
+              }
+              user.push(item);
+          }
+          });
+          this.lastUsr = users.docs[users.docs.length -1];
+          if(this.lastUsr != null){
+            const lastUsr = this.lastUsr.data()
+            const endUsr = this.endUsr.data()
+            if(lastUsr.email === endUsr.email){
+              this.hasMoreUsr = false;
+            }
+          }else{
+            console.log('es null pá')
+          }
+
+        },
+
+      }
 }
 
 </script>

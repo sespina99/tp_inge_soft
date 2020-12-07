@@ -20,9 +20,9 @@
 
               <ul style="list-style: none;">
                 <v-row>
-                  <li v-for="category in 16" v-bind:key="category">
+                  <li v-for="category in categories" v-bind:key="category">
                     <v-col cols="1">
-                      <v-btn>{{ categories[category - 1] }}</v-btn>
+                      <v-btn @click="this.categoryBtn(category)">{{ category}}</v-btn>
                     </v-col>
                   </li>
                 </v-row>
@@ -60,6 +60,8 @@
 </template>
 
 <script>
+//import {db, storage} from "@/db";
+
 export default {
   data() {
     return {
@@ -104,6 +106,10 @@ export default {
           direction: ' Buenos Aires, AR'
         },
       ],
+      categorySelected: null,
+      lastUsr: null,
+      endUsr: null,
+      hasMoreUsr: true
     }
   },
   created() {
@@ -148,6 +154,41 @@ export default {
             direction: ' Buenos Aires, AR'
           },
         ]
+  },
+  methods:{
+    categoryBtn(category){
+      if(category === this.categorySelected) {
+        this.categorySelected = null
+      }else{
+        this.categorySelected = category
+      }
+      //reload
+    },
+    /*async getUsr(user){
+      let users
+      if(this.lastUsr === null){
+        const doc = await db.collection('users').get()
+        this.endUsr = doc.docs[doc.docs.length -1]
+        users = await db.collection('users').limit(5).get()
+      }else{
+        users = await db.collection('users').startAfter( this.lastUsr).limit(5).get()
+      }
+      users.docs.forEach( doc =>{
+        const aux = doc.data()
+        const item ={
+          username: aux.username,
+
+        }
+
+          user.push(item);
+        });
+      this.lastUsr = users.docs[users.docs.length -1];
+      const lastUsr = this.lastUsr.data()
+      const endUsr = this.endUsr.data()
+      if(lastUsr.email === endUsr.email){
+        this.hasMoreUsr = false;
+      }
+    }*/
   }
 
 }
