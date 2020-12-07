@@ -16,7 +16,14 @@
             </v-col>
             <v-spacer></v-spacer>
 
-            <v-btn  icon router :to="editar_link">
+<v-btn style="background-color: #4AD5E1;color: white" v-if="amigos === true"  router :to="mensajes_link">
+              <v-icon>mdi-forum</v-icon>
+              Mandar mensaje</v-btn>
+            <v-btn v-if="miperfil === false" @click="()=>amigos?eliminarAmigo():agregarAmigo()" >
+              <v-icon>{{amigos?'mdi-account-minus':'mdi-account-plus'}}</v-icon>
+              {{amigos?'Quitar de network':'Agregar a network'}}</v-btn>
+
+            <v-btn v-if="miperfil === true" icon router :to="editar_link">
               <v-icon color="#4AD5E1">mdi-pencil</v-icon>
             </v-btn>
           </v-card-actions>
@@ -259,6 +266,9 @@ import {auth, db, storage} from "@/db";
 export default {
   data() {
     return {
+	mensajes_link:'/Mensajes',
+      amigos:false,
+      miperfil:true,
       created: '',
       nuevaInstitucion: '',
       nuevaFecha: '',

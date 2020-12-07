@@ -23,7 +23,7 @@
 
           <v-row>
             <v-col cols="1" style="padding-bottom: 0">
-              <v-btn style="padding-left: 40px;padding-right: 60px" icon large right>
+              <v-btn style="padding-left: 40px;padding-right: 60px" icon x-large right router :to="perfil_link">
                 <v-avatar size="70">
                   <v-img  :src="this.foto"></v-img>
                 </v-avatar>
@@ -48,7 +48,7 @@
           <v-card-actions style="padding-top: 0;padding-bottom: 0">
             <v-spacer></v-spacer>
             <v-col cols="2" class="mr-auto" style="padding-top: 0">
-              <input type="file" @change="uploadFiles" accept="image/*, video/*" multiple/>
+              <input type="file" @change="uploadFiles" accept="image/*, video/*"/>
             </v-col>
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
@@ -80,9 +80,12 @@
 
             <v-list-item
             >
+<v-btn icon x-large right router :to="perfil_link">
               <v-avatar size="70" style="margin-right: 2%">
                 <v-img  :src="item.avatar"></v-img>
               </v-avatar>
+
+              </v-btn>
 
               <v-list-item-content>
                 <v-row>
@@ -95,7 +98,7 @@
 
                   <v-col cols="3">
                     <v-list-item-title >
-                      <v-btn>
+                      <v-btn style="alignment-self: end" right router :to="mensajes_link">
                         <v-icon>mdi-forum</v-icon>
                         Contactar
                       </v-btn>
@@ -146,6 +149,9 @@ import { auth, db, storage} from "@/db";
 export default {
   data() {
     return {
+
+      mensajes_link:'/Mensajes',
+      perfil_link: '/Perfil',
       text: '',
       anuncio: '',
       orden: ['Reciente'],
