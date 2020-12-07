@@ -2,7 +2,7 @@
 <div >
 <v-app>
   <v-container
-style="height: 130%"
+
   >
     <v-row class="no-gutters elevation-4">
       <v-col
@@ -51,9 +51,7 @@ style="height: 130%"
       >
         <v-responsive
             v-if="activeChat"
-            class="overflow-y-hidden fill-height"
-            height="500"
-        >
+            class="overflow-y-hidden fill-height">
           <v-card
               flat
 
@@ -61,7 +59,11 @@ style="height: 130%"
             <v-card-title>
               john doe
             </v-card-title>
-            <v-card-text class="flex-grow-1 overflow-y-auto">
+            <v-card-text style="min-height: 80%;max-height: 500px">
+              <v-responsive
+                  class="overflow-y-auto fill-height"
+                  height="500"
+              >
               <template v-for="(msg, i) in messages">
                 <div v-bind:key="i"
                     :class="{ 'd-flex flex-row-reverse': msg.me }"
@@ -100,6 +102,7 @@ style="height: 130%"
                   </v-menu>
                 </div>
               </template>
+              </v-responsive>
             </v-card-text>
             <v-card-text >
               <v-text-field
@@ -108,7 +111,7 @@ style="height: 130%"
                   type="text"
                   no-details
                   outlined
-                  append-outer-icon="send"
+                  append-outer-icon="mdi-send"
                   @keyup.enter="messages.push(messageForm)"
                   @click:append-outer="messages.push(messageForm)"
                   hide-details
@@ -295,3 +298,4 @@ img.center {
   margin: 0 auto;
 }
 </style>
+
