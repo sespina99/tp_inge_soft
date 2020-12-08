@@ -3,6 +3,7 @@
   <v-container color="black" flat fluid>
 
     <v-card class="mx-auto" max-width="50%" style=" margin-bottom: 4%">
+      <v-form ref="form">
       <v-row>
         <v-spacer></v-spacer>
         <v-col cols="2">
@@ -29,6 +30,7 @@
       <v-card-title style="padding: 0" class="pl-2" contain></v-card-title>
       <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
         <h4>Nombre de usuario:</h4>
+
         <v-text-field
             v-model="fullname"
             :error-messages="fullnameErrors"
@@ -99,6 +101,7 @@
               solo
               @input="this.$v.ref_spotify.$touch()"
               @blur="this.$v.ref_spotify.$touch()"
+              :rules="spotifyRule"
           ></v-text-field>
           <v-col cols="1">
             <v-img min-height="3'%" max-height="30%" style="size: initial" src="../../assets/apple.png"/>
@@ -109,6 +112,7 @@
               solo
               @input="this.$v.ref_apple.$touch()"
               @blur="this.$v.ref_apple.$touch()"
+              :rules="appleRule"
           ></v-text-field>
           <v-col cols="1" style="padding-top: 0">
             <v-img style="size: initial" src="../../assets/youtube.png"/>
@@ -119,6 +123,7 @@
               solo
               @input="this.$v.ref_youtube.$touch()"
               @blur="this.$v.ref_youtube.$touch()"
+              :rules="youtubeRule"
           ></v-text-field>
           <v-col cols="1" style="padding-top: 0">
             <v-img min-width="30%" max-width="80%" align="center" src="../../assets/soundcloud.png"/>
@@ -129,6 +134,7 @@
               solo
               @input="this.$v.ref_soundcloud.$touch()"
               @blur="this.$v.ref_soundcloud.$touch()"
+              :rules="soundcloudRule"
           ></v-text-field>
         </div>
         <v-row>
@@ -140,6 +146,7 @@
           <v-divider></v-divider>
         </v-row>
       </v-card-text>
+      </v-form>
     </v-card>
 
 
@@ -189,7 +196,18 @@ export default {
       instrumentos: '',
       generos: '',
       acerca: '',
-
+      appleRule:[
+          v => !v || v.startsWith('https://music.apple.com/ar/artist/') || 'Link invalido'
+      ],
+      spotifyRule:[
+        v => !v || v.startsWith('https://spotify.com/') || 'Link invalido'
+      ],
+      youtubeRule:[
+        v => !v || v.startsWith('https://www.youtube.com/channel/') || 'Link invalido'
+      ],
+      soundcloudRule:[
+        v => !v || v.startsWith('https://soundcloud.com/') || 'Link invalido'
+      ]
 
     }
   },
@@ -207,18 +225,9 @@ export default {
       this.tag = data.tag;
       this.generos = data.genres;
       this.instrumentos = data.instruments;
+      this.profilePic = data.profilePic
+      this.banner = data.banner
 
-    }).then(() => {
-      storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL().then(url => {
-        this.profilePic = url;
-      }).catch(err => {
-        console.log(err.message)
-      })
-      storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').getDownloadURL().then(url => {
-        this.banner = url;
-      }).catch(err => {
-        console.log(err.message)
-      })
     }).catch(e => {
       this.created = e.message;
     });
@@ -257,39 +266,43 @@ export default {
   },
   methods: {
     async submit() {
-      let prof = ''
-      let ban = ''
-      if (this.profilePic.type !== undefined) {
-        await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').put(this.profilePic, {contentType: this.profilePic.type}).catch(err => {
-          console.log(err.message);
-        });
-        prof = await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL()
-        await db.collection('users').doc(auth.currentUser.uid).update({ profilePic: prof})
-      }
-      if (this.banner.type !== undefined) {
-        await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').put(this.banner, {contentType: this.banner.type}).catch(err => {
-          console.log(err.message);
-        });
-        ban = await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').getDownloadURL()
-        await db.collection('users').doc(auth.currentUser.uid).update({ banner: ban})
+      if(this.$refs.form.validate()) {
+        let prof = ''
+        let ban = ''
+        if (this.profilePic.type !== undefined) {
+          await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').put(this.profilePic, {contentType: this.profilePic.type}).catch(err => {
+            console.log(err.message);
+          });
+          prof = await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL()
+          await db.collection('users').doc(auth.currentUser.uid).update({profilePic: prof})
+        }
+        if (this.banner.type !== undefined) {
+          await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').put(this.banner, {contentType: this.banner.type}).catch(err => {
+            console.log(err.message);
+          });
+          ban = await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').getDownloadURL()
+          await db.collection('users').doc(auth.currentUser.uid).update({banner: ban})
 
-      }
+        }
 
-      db.collection('users').doc(auth.currentUser.uid).update({
-        job: this.trabajo,
-        tag: this.tag,
-        instruments: this.instrumentos,
-        genres: this.generos,
-        bio: this.acerca,
-        spotify: this.ref_spotify,
-        appleMusic: this.ref_apple,
-        soundcloud: this.ref_soundcloud,
-        youtube: this.ref_youtube,
-      }).catch(err => {
-        console.log(err)
-      }).then(async () => {
-        await this.$router.push('/Perfil');
-      })
+        db.collection('users').doc(auth.currentUser.uid).update({
+          job: this.trabajo,
+          tag: this.tag,
+          instruments: this.instrumentos,
+          genres: this.generos,
+          bio: this.acerca,
+          spotify: this.ref_spotify,
+          appleMusic: this.ref_apple,
+          soundcloud: this.ref_soundcloud,
+          youtube: this.ref_youtube,
+        }).catch(err => {
+          console.log(err)
+        }).then(async () => {
+          await this.$router.push('/Perfil');
+        })
+      }else{
+        console.log('no funciona asi pá...')
+      }
     },
     uploadProfilePic(event) {
       this.profilePic = event.target.files[0]
@@ -299,6 +312,7 @@ export default {
     }
 
   }
+
 }
 </script>
 

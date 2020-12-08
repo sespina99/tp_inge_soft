@@ -24,7 +24,7 @@
 <br>
           <v-divider v-if="solicitudes_abierto === true"></v-divider>
           <v-list three-line v-if="solicitudes_abierto === true">
-            <template v-for="(item, index) in items">
+            <template v-for="(item, index) in requests">
               <v-subheader
                   v-if="item.header"
                   :key="item.header"
@@ -38,7 +38,7 @@
               ></v-divider>
 
               <v-list-item
-                  v-else
+                  v-else-if="index < maxPending"
                   :key="item.title"
               >
                 <v-avatar size="70">
@@ -48,15 +48,15 @@
                 <v-list-item-content>
                   <v-row>
                     <v-col cols="4">
-                      <v-list-item-title ><h3 style="padding-left: 5%">{{item.title}}</h3></v-list-item-title>
-                      <v-list-item-subtitle style="padding-left: 5%">{{item.distance}} </v-list-item-subtitle>
+                      <v-list-item-title ><h3 style="padding-left: 5%">{{item.username}}</h3></v-list-item-title>
+                      <v-list-item-subtitle style="padding-left: 5%">{{item.job}} </v-list-item-subtitle>
                     </v-col>
                     <v-spacer></v-spacer>
 
                    <v-spacer></v-spacer>
                     <v-col cols="2">
                       <v-list-item-title >
-                        <v-btn style="alignment-self: end">
+                        <v-btn style="alignment-self: end" @click="acceptFriend(item.uid,true)">
                           <v-icon>mdi-account-plus</v-icon>
                           Agregar
                         </v-btn>
@@ -64,9 +64,9 @@
                     </v-col>
                     <v-col cols="2">
                       <v-list-item-title>
-                        <v-btn style="alignment-self: end">
+                        <v-btn style="alignment-self: end" @click="acceptFriend(item.uid,false)">
                           <v-icon>mdi-account-minus</v-icon>
-                          Eliminar
+                          Rechazar
                         </v-btn>
                       </v-list-item-title>
                     </v-col>
@@ -74,8 +74,10 @@
                 </v-list-item-content>
               </v-list-item>
 
+
             </template>
           </v-list>
+          <v-btn v-if="!isMaxPending" @click="morePending">mas peticiones</v-btn>
 
 
 
@@ -134,7 +136,7 @@
 <br>
           <v-divider></v-divider>
           <v-list three-line>
-            <template v-for="(item, index) in items">
+            <template v-for="(item, index) in friends">
               <v-subheader
                   v-if="item.header"
                   :key="item.header"
@@ -148,7 +150,7 @@
               ></v-divider>
 
               <v-list-item
-                  v-else
+                  v-else-if="index < maxFriend"
                   :key="item.title"
               >
                 <v-avatar size="70">
@@ -158,8 +160,8 @@
                 <v-list-item-content>
                   <v-row>
                     <v-col cols="4">
-                      <v-list-item-title ><h3 style="padding-left: 5%">{{item.title}}</h3></v-list-item-title>
-                      <v-list-item-subtitle style="padding-left: 5%">{{item.distance}} </v-list-item-subtitle>
+                      <v-list-item-title ><h3 style="padding-left: 5%">{{item.username}}</h3></v-list-item-title>
+                      <v-list-item-subtitle style="padding-left: 5%">{{item.job}} </v-list-item-subtitle>
                     </v-col>
                     <v-spacer></v-spacer>
 
@@ -178,6 +180,7 @@
 
             </template>
           </v-list>
+          <v-btn v-if="!isMaxFriend" @click="moreFriends">mas amigos</v-btn>
 
 
 
@@ -201,6 +204,8 @@
 </template>
 
 <script>
+import {auth, db} from "@/db";
+
 export default {
   numAAB: 1,
   data() {
@@ -211,89 +216,107 @@ solicitudes_abierto: true,
       orden: ['Reciente'],
       toggled: false,
       categories: ['Clasica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
-      items: [
-        {
-          avatar: require("../../assets/p1.png"),
-          title: 'Lisa Gerrard',
-          distance: 'Musico',
-          direction: ' Ciudad Autónoma de Buenos\n' +
-              ' Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-          title: 'Gonzalo Sintardi',
-          distance: 'Dueño de Bar Moly',
-          direction: ' Ramos Mejía, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-          title: 'Domingo Santaris',
-          distance: 'Dueño de Bar Antidomingo',
-          direction: ' Moron, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-          title: 'Carla Gardel',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-          title: 'Sofia Martinez',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../../assets/p5.png"),
-          title: 'Mariela Gomez',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../../assets/p7.png"),
-          title: 'Brendan Perry ',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../../assets/p8.png"),
-          title: 'Maria Santana',
-          distance: 'Musico',
-          direction: ' Buenos Aires, AR'
-        },
-        { divider: true, inset: true },
-        {
-          avatar: require("../../assets/p9.png"),
-          title: 'Dastona Gonikian',
-          distance: 'Directora de Conservatorio Astor Piazzolla',
-          direction: ' Buenos Aires, AR'
-        },
-      ],
-      methods: {
-         getImg(inf) {
-           switch (inf) {
-              case 1: return '../../p1.png';
-             case 2: return '../../p2.png';
-             case 3: return '../../p3.png';
-             case 4: return '../../p4.png';
-             case 5: return '../../p5.png';
-             case 6: return '../../p5.png';
-             case 7: return '../../p7.png';
-             case 8: return '../../p8.png';
-             case 9: return '../../p9.png';
-
-           }
-        }
-      }
+      friends: [],
+      maxFriend: 0,
+      isMaxFriend: false,
+      maxPending: 5,
+      isMaxPending: true,
+      requests: [],
     }
+  }, async beforeMount() {
+    await this.getFriends(this.friends)
+    await this.getRequests(this.requests)
+    console.log(this.requests.length)
+    this.moreFriends()
+    this.morePending()
+    console.log(this.requests)
   },
+  methods: {
+    moreFriends(){
+      this.maxFriend += 5
+      if(this.maxFriend >= this.friends.length)
+        this.isMaxFriend = true
+    },
+    morePending(){
+      this.maxPending += 5
+      if(this.maxPending >= this.requests.length)
+        this.isMaxPending = true
+      console.log(this.requests.length)
+    },
+    async reloadData(){
+      this.friends = []
+      this.requests = []
+      this.solicitudes_abierto = true
+      await this.getFriends(this.friends)
+      await this.getRequests(this.requests)
+      console.log(this.requests)
+    },
+    async acceptFriend(uid, state){
+      const doc = await db.collection('friends').doc(auth.currentUser.uid).get()
+      const list = doc.data()
+      let friends = list.friends
+      let request = list.friendRequests
+      if(state)
+        friends.push(uid)
+      await db.collection('friends').doc(auth.currentUser.uid).update({
+        friends: friends,
+        friendRequests: request.filter((value)=>{
+          return value !== uid
+        })
+      })
+
+      const pendingDoc = await db.collection('friends').doc(uid).get()
+      const pendingList = pendingDoc.data()
+      let pendingFriends = pendingList.friends
+      let pending = pendingList.pendingFriends
+      if(state)
+        pendingFriends.push(auth.currentUser.uid)
+      await db.collection('friends').doc(uid).update({
+        friends: pendingFriends,
+        pendingFriends: pending.filter((value)=>{
+          return value !== auth.currentUser.uid
+        })
+      })
+      await this.reloadData()
+    },
+
+    async getFriends(friend) {
+      const doc = await db.collection('friends').doc(auth.currentUser.uid).get()
+      const friendList = doc.data()
+
+      friendList.friends.forEach((uid) => {
+        db.collection('users').doc(uid).get().then((usr) => {
+          const elem = usr.data()
+          const aux = {
+            username: elem.username,
+            avatar: elem.profilePic,
+            job: elem.job,
+            uid: uid
+          }
+          friend.push(aux)
+        })
+      })
+
+    },
+    async getRequests(friend) {
+      const doc = await db.collection('friends').doc(auth.currentUser.uid).get()
+      const friendList = doc.data()
+
+      friendList.friendRequests.forEach((uid) => {
+        db.collection('users').doc(uid).get().then((usr) => {
+          const elem = usr.data()
+          const aux = {
+            username: elem.username,
+            avatar: elem.profilePic,
+            job: elem.job,
+            uid: uid
+          }
+          friend.push(aux)
+        })
+      })
+
+    },
+  }
 }
 
 </script>

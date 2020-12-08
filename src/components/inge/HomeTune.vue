@@ -48,7 +48,7 @@
           <v-card-actions style="padding-top: 0;padding-bottom: 0">
             <v-spacer></v-spacer>
             <v-col cols="2" class="mr-auto" style="padding-top: 0">
-              <input type="file" @change="uploadFiles" accept="image/*, video/*"/>
+              <input v-if="emailVerified" type="file" @change="uploadFiles" accept="image/*, video/*"/>
             </v-col>
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
@@ -59,9 +59,11 @@
 
 
             <v-col cols="auto" style="padding-top: 0">
-              <v-btn color="#47D6D7" @click="postBtn()">
+              <v-btn color="#47D6D7" v-if="emailVerified" @click="postBtn()">
                 Publicar
               </v-btn>
+              <v-card-text v-if="!emailVerified">tiene que verificar el email para postear</v-card-text>
+              <v-btn v-if="!emailVerified" @click="resendEmail">reenviar email</v-btn>
             </v-col>
           </v-card-actions>
 
@@ -163,12 +165,48 @@ export default {
       endPost:null,
       hasMorePost: true,
       postFiles: [],
-      foto: ''
+      foto: '',
+      emailVerified: true
     }
   },
   async beforeMount() {
     try {
-      this.foto = await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL()
+      this.emailVerified = auth.currentUser.emailVerified
+      await db.collection('users').doc(auth.currentUser.uid).get().then((data)=>{
+        const aux = data.data()
+        this.foto = aux.profilePic
+      }).catch(async e => {
+        this.created = e.message;
+        const url = await storage.ref('users/start/profile.jpg').getDownloadURL()
+        this.foto = url
+        db.collection('users').doc(auth.currentUser.uid).set({
+          job: '',
+          tag: '',
+          instruments: '',
+          genres: '',
+          bio: '',
+          spotify: '',
+          appleMusic: '',
+          soundcloud: '',
+          youtube: '',
+          banner: '',
+          profilePic: url,
+          activities: [],
+          username: auth.currentUser.displayName,
+          email: auth.currentUser.email,
+          uid: auth.currentUser.uid,
+        }).then(() => {
+          db.collection('friends').doc(auth.currentUser.uid).set({
+            friends: [],
+            friendRequests: [],
+            pendingFriends: []
+          })
+        }).catch(err => {
+          console.log(err)
+        })
+      })
+
+
       await this.getPosts(this.items);
       /*for(const item in this.items){
           item.timestr = this.formatDate(item.time)
@@ -181,6 +219,9 @@ export default {
     }
   },
   methods:{
+    resendEmail(){
+      auth.currentUser.sendEmailVerification()
+    },
     uploadFiles(e){
       const aux = e.target.files
       aux.forEach((elem)=>{
@@ -191,6 +232,7 @@ export default {
       try {
         this.items = [];
         this.hasMorePost = true;
+        this.emailVerified = auth.currentUser.emailVerified
         await this.getPosts(this.items);
         this.text = '';
         console.log(this.items)
@@ -239,11 +281,10 @@ export default {
           const aux = doc.data();
           db.collection('users').doc(aux.uid).get().then(async (elem)=>{
             const usr = await elem.data()
-            let avatarBD = await storage.ref('users/' + aux.uid + '/profile.jpg').getDownloadURL()
             const item = {
               text: aux.text,
               title: usr.username,
-              avatar: avatarBD,
+              avatar: usr.profilePic,
               time: aux.timestr,
               date: aux.datestr,
               tag: usr.tag,
@@ -252,10 +293,14 @@ export default {
           })
       });
       this.lastPost = post.docs[post.docs.length -1];
-      const lastPost = this.lastPost.data()
-      const endPost = this.endPost.data()
-      if(lastPost.pid === endPost.pid){
-        this.hasMorePost = false;
+      if(this.lastPost != null){
+        const lastPost = this.lastPost.data()
+        const endPost = this.endPost.data()
+        if(lastPost.pid === endPost.pid){
+          this.hasMorePost = false;
+        }
+      }else{
+        console.log('es null pá')
       }
     },
     async postBtn(){

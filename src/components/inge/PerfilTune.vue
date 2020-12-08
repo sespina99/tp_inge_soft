@@ -331,11 +331,10 @@ export default {
         const aux = doc.data();
         db.collection('users').doc(aux.uid).get().then(async (elem)=>{
           const usr = await elem.data()
-          let avatarBD = await storage.ref('users/' + aux.uid + '/profile.jpg').getDownloadURL()
           const item = {
             text: aux.text,
             title: usr.username,
-            avatar: avatarBD,
+            avatar: usr.profilePic,
             time: aux.timestr,
             date: aux.datestr,
             tag: usr.tag,
@@ -344,10 +343,14 @@ export default {
         })
       });
       this.lastPost = post.docs[post.docs.length -1];
-      const lastPost = this.lastPost.data()
-      const endPost = this.endPost.data()
-      if(lastPost.pid === endPost.pid){
-        this.hasMorePost = false;
+      if(this.lastPost != null){
+        const lastPost = this.lastPost.data()
+        const endPost = this.endPost.data()
+        if(lastPost.pid === endPost.pid){
+          this.hasMorePost = false;
+        }
+      }else{
+        console.log('es null pá')
       }
     },
     updateActivities() {
@@ -414,19 +417,9 @@ export default {
       this.banner = data.banner;
       this.actividades = data.activities;
 
-    }).then( async () => {
-      await storage.ref('users/' + auth.currentUser.uid + '/profile.jpg').getDownloadURL().then( url => {
-        this.profilePic = url;
-      }).catch(err =>{
-        console.log (err.message)
-      })
-      await storage.ref('users/' + auth.currentUser.uid + '/banner.jpg').getDownloadURL().then( url => {
-        this.banner = url;
-      }).catch(err =>{
-        console.log (err.message)
-      })
-    }).catch( e =>{
+    }).catch(async e =>{
       this.created = e.message;
+      const url = await storage.ref('users/start/profile.jpg').getDownloadURL()
       db.collection('users').doc(auth.currentUser.uid).set({
         job: '',
         tag: '',
@@ -438,7 +431,7 @@ export default {
         soundcloud: '',
         youtube: '',
         banner: '',
-        profilePic: '',
+        profilePic: url,
         activities: [],
         username: auth.currentUser.displayName,
         email: auth.currentUser.email,

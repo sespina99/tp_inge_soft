@@ -127,7 +127,7 @@ export default {
         docFriend.get().then(async (elem) => {
           const data = await elem.data()
           request = data.friendRequests
-          request.push(uid)
+          request.push(auth.currentUser.uid)
         }).then(() => {
           docFriend.update({
             friendRequests: request
