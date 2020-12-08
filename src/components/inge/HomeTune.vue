@@ -82,7 +82,7 @@
 
             <v-list-item
             >
-<v-btn icon x-large right router :to="perfil_link">
+<v-btn icon x-large right router :to="perfil_ext_link">
               <v-avatar size="70" style="margin-right: 2%">
                 <v-img  :src="item.avatar"></v-img>
               </v-avatar>
@@ -154,6 +154,7 @@ export default {
 
       mensajes_link:'/Mensajes',
       perfil_link: '/Perfil',
+	perfil_ext_link: '/PerfilExterno',
       text: '',
       anuncio: '',
       orden: ['Reciente'],
