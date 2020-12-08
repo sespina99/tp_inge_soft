@@ -53,6 +53,11 @@ const routes = [
     component: ProfileView,
   },
   {
+    path: '/PerfilExterno',
+    name: 'PerfilExterno',
+    component: PerfilExternoView,
+  },
+  {
     path: '/EditarPerfil',
     name: 'EditarPerfil',
     component: EditarPerfilView,
