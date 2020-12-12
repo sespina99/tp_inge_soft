@@ -82,7 +82,7 @@
 
             <v-list-item
             >
-<v-btn icon x-large right router :to="perfil_ext_link">
+              <v-btn icon x-large right router @click="clickProfile(item.uid)">
               <v-avatar size="70" style="margin-right: 2%">
                 <v-img  :src="item.avatar"></v-img>
               </v-avatar>
@@ -220,6 +220,14 @@ export default {
     }
   },
   methods:{
+    async clickProfile(uid){
+      console.log(uid)
+      if(uid === auth.currentUser.uid){
+        await this.$router.push(this.perfil_link);
+      }else{
+        await this.$router.push({path: this.perfil_ext_link, query:{uid: uid}});
+      }
+    },
     resendEmail(){
       auth.currentUser.sendEmailVerification()
     },
@@ -284,6 +292,7 @@ export default {
             const usr = await elem.data()
             const item = {
               text: aux.text,
+              uid: aux.uid,
               title: usr.username,
               avatar: usr.profilePic,
               time: aux.timestr,
@@ -302,6 +311,7 @@ export default {
         }
       }else{
         console.log('es null pá')
+
       }
     },
     async postBtn(){

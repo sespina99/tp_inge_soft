@@ -58,7 +58,7 @@
                       <v-list-item-title >
                         <v-btn style="alignment-self: end" @click="acceptFriend(item.uid,true)">
                           <v-icon>mdi-account-plus</v-icon>
-                          Agregar
+                          Aceptar
                         </v-btn>
                       </v-list-item-title>
                     </v-col>
@@ -168,7 +168,7 @@
                     <v-spacer></v-spacer>
                     <v-col cols="3">
                       <v-list-item-title >
-                        <v-btn>
+                        <v-btn @click="deleteFriend(item.uid)">
                           <v-icon>mdi-forum</v-icon>
                           Contactar
                         </v-btn>
@@ -232,6 +232,39 @@ solicitudes_abierto: true,
     console.log(this.requests)
   },
   methods: {
+    async deleteFriend(uid){
+      try {
+        let friends
+        let index
+        const docCurrent = await db.collection('friends').doc(auth.currentUser.uid)
+        const docFriend = db.collection('friends').doc(uid)
+        docCurrent.get().then(async (elem) => {
+          const data = await elem.data()
+          friends = data.friends
+          index = friends.indexOf(uid)
+          friends.splice(index,1)
+        }).then(() => {
+          docCurrent.update({
+            friends: friends
+          })
+        })
+        docFriend.get().then(async (elem) => {
+          const data = await elem.data()
+          friends = data.friends
+          index = friends.indexOf(uid)
+          friends.splice(index,1)
+        }).then(() => {
+          docFriend.update({
+            friends: friends
+          })
+        }).finally(async ()=>{
+          await this.reloadData()
+        })
+      }catch(e){
+        console.log(e.message)
+      }
+
+    },
     moreFriends(){
       this.maxFriend += 5
       if(this.maxFriend >= this.friends.length)

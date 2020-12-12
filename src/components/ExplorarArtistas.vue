@@ -81,7 +81,7 @@
                     <v-spacer></v-spacer>
                     <v-col cols="3">
                       <v-list-item-title >
-                        <v-btn @click="addFriend(item.uid)">
+                        <v-btn >
                           <v-icon>mdi-forum</v-icon>
                           Contactar
                         </v-btn>
@@ -158,34 +158,6 @@ export default {
     }
   },
       methods: {
-        async addFriend(uid){
-          try {
-            let pending
-            let request
-            const docCurrent = await db.collection('friends').doc(auth.currentUser.uid)
-            const docFriend = db.collection('friends').doc(uid)
-            docCurrent.get().then(async (elem) => {
-              const data = await elem.data()
-              pending = data.pendingFriends
-              pending.push(uid)
-            }).then(() => {
-              docCurrent.update({
-                pendingFriends: pending
-              })
-            })
-            docFriend.get().then(async (elem) => {
-              const data = await elem.data()
-              request = data.friendRequests
-              request.push(auth.currentUser.uid)
-            }).then(() => {
-              docFriend.update({
-                friendRequests: request
-              })
-            })
-          }catch(e){
-            console.log(e.message)
-          }
-        },
         async reloadData() {
           try {
             this.items = [];

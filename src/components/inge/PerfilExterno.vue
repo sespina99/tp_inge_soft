@@ -16,12 +16,18 @@
             </v-col>
             <v-spacer></v-spacer>
 
-<v-btn style="background-color: #4AD5E1;color: white" v-if="amigos === true"  router :to="mensajes_link">
+            <v-btn style="background-color: #4ad5e1;color: white" router :to="mensajes_link">
               <v-icon>mdi-forum</v-icon>
               Mandar mensaje</v-btn>
-            <v-btn @click="()=>amigos?eliminarAmigo():agregarAmigo()" >
-              <v-icon>{{amigos?'mdi-account-minus':'mdi-account-plus'}}</v-icon>
-              {{amigos?'Quitar de network':'Agregar a network'}}</v-btn>
+            <v-btn  v-if="amigos === 3" @click="acceptFriend(true)">
+              <v-icon>mdi-account-plus</v-icon>
+              Aceptar</v-btn>
+            <v-btn  v-if="amigos === 3" @click="acceptFriend(false)">
+              <v-icon>mdi-account-minus</v-icon>
+              Rechazar</v-btn>
+            <v-btn v-if="amigos !== 3" @click="clickBtn" >
+              <v-icon>{{this.btnIcon()}}</v-icon>
+              {{this.btnText()}}</v-btn>
 
           
           </v-card-actions>
@@ -74,74 +80,7 @@
 
           <br>
           <v-card-title style="padding: 0" class="pl-2" contain>
-            <div>Actividad Reciente    Ver mas</div>
-
-
-            <v-row justify="end">
-              <v-dialog
-                  v-model="dialog"
-                  persistent
-                  max-width="600px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                      color="#4AD5E1"
-                      v-bind="attrs"
-                      v-on="on"
-                      style="margin-right: 3%"
-                  >
-                    <h1 style="color: white"> + </h1> <h4 style="color: white"> Agregar actividad</h4>
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title>
-                    <h1 class="headline">Nueva Actividad</h1>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container>
-                      <v-row>
-                        <v-col cols="12">
-                          <v-text-field
-                              v-model="nuevaInstitucion"
-                              label="Nombre de Institución/Bar"
-                              solo
-                              required
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12">
-                          <input type="file"  @change="uploadImage" accept="image/*"/>
-                        </v-col>
-                        <v-col cols="12">
-                          <v-date-picker
-                              v-model="nuevaFecha"
-                              solo
-                              required
-                          ></v-date-picker>
-                        </v-col>
-
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="dialog = false"
-                    >
-                      Cerrar
-                    </v-btn>
-                    <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="this.updateActivities"
-                    >
-                      Guardar
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-row>
+            <div>Actividad Reciente</div>
 
 
           </v-card-title>
@@ -259,13 +198,16 @@
 </template>
 
 <script>
-import {auth, db, storage} from "@/db";
+import {auth, db} from "@/db";
 
 export default {
+  props:{
+    uid: String
+  },
   data() {
     return {
 	mensajes_link:'/Mensajes',
-      amigos:false,
+      amigos:0,
       created: '',
       nuevaInstitucion: '',
       nuevaFecha: '',
@@ -306,6 +248,166 @@ export default {
     }
   },
   methods: {
+    async reloadData(){
+      this.lastPost = null
+      this.endPost = null
+      this.hasMorePost = true
+      this.items = []
+      this.actividades = []
+      await this.getPosts(this.items);
+      this.amigos = 0;
+      let indexFriends, indexPending, indexRequests
+
+      db.collection('friends').doc( auth.currentUser.uid ).get().then((elem) =>{
+        const data = elem.data();
+        indexFriends = data.friends.indexOf(this.$route.query.uid )
+        indexPending = data.pendingFriends.indexOf(this.$route.query.uid )
+        indexRequests = data.friendRequests.indexOf(this.$route.query.uid )
+        if(indexFriends !== -1){
+          this.amigos = 1
+        }else if(indexPending !== -1){
+          this.amigos = 2
+        }else if( indexRequests !== -1){
+          this.amigos = 3
+        }
+      })
+    },
+    btnText(){
+      switch (this.amigos){
+        case 0: return 'Agregar'
+        case 1: return 'Eliminar'
+        case 2: return 'Cancelar solicitud'
+      }
+    },
+    clickBtn(){
+      switch (this.amigos){
+        case 0: this.addFriend(this.$route.query.uid)
+              break
+        case 1: this.deleteFriend(this.$route.query.uid)
+              break
+        case 2: this.cancelRequest()
+          break
+      }
+    },
+    btnIcon(){
+      switch (this.amigos){
+        case 0: return 'mdi-account-plus'
+        case 1: return 'mdi-account-minus'
+        case 2: return 'mdi-close'
+      }
+    },
+    async addFriend(uid){
+      try {
+        let pending
+        let request
+        const docCurrent = await db.collection('friends').doc(auth.currentUser.uid)
+        const docFriend = db.collection('friends').doc(uid)
+        docCurrent.get().then(async (elem) => {
+          const data = await elem.data()
+          pending = data.pendingFriends
+          pending.push(uid)
+        }).then(() => {
+          docCurrent.update({
+            pendingFriends: pending
+          })
+        })
+        docFriend.get().then(async (elem) => {
+          const data = await elem.data()
+          request = data.friendRequests
+          request.push(auth.currentUser.uid)
+        }).then(() => {
+          docFriend.update({
+            friendRequests: request
+          })
+        }).finally(async ()=>{
+          await this.reloadData()
+        })
+      }catch(e){
+        console.log(e.message)
+      }
+    },
+    async deleteFriend(uid){
+      try {
+        let friends
+        let index
+        const docCurrent = await db.collection('friends').doc(auth.currentUser.uid)
+        const docFriend = db.collection('friends').doc(uid)
+        docCurrent.get().then(async (elem) => {
+          const data = await elem.data()
+          friends = data.friends
+          index = friends.indexOf(uid)
+          friends.splice(index,1)
+        }).then(() => {
+          docCurrent.update({
+            friends: friends
+          })
+        })
+        docFriend.get().then(async (elem) => {
+          const data = await elem.data()
+          friends = data.friends
+          index = friends.indexOf(uid)
+          friends.splice(index,1)
+        }).then(() => {
+          docFriend.update({
+            friends: friends
+          })
+        }).finally(async ()=>{
+          await this.reloadData()
+        })
+      }catch(e){
+        console.log(e.message)
+      }
+
+    },
+    async acceptFriend( state){
+      const uid = this.$route.query.uid
+      const doc = await db.collection('friends').doc(auth.currentUser.uid).get()
+      const list = doc.data()
+      let friends = list.friends
+      let request = list.friendRequests
+      if(state)
+        friends.push(uid)
+      await db.collection('friends').doc(auth.currentUser.uid).update({
+        friends: friends,
+        friendRequests: request.filter((value)=>{
+          return value !== uid
+        })
+      })
+
+      const pendingDoc = await db.collection('friends').doc(uid).get()
+      const pendingList = pendingDoc.data()
+      let pendingFriends = pendingList.friends
+      let pending = pendingList.pendingFriends
+      if(state)
+        pendingFriends.push(auth.currentUser.uid)
+      await db.collection('friends').doc(uid).update({
+        friends: pendingFriends,
+        pendingFriends: pending.filter((value)=>{
+          return value !== auth.currentUser.uid
+        })
+      })
+      await this.reloadData()
+    },
+    async cancelRequest(){
+      const doc = await db.collection('friends').doc(this.$route.query.uid).get()
+      const list = doc.data()
+      let request = list.friendRequests
+      await db.collection('friends').doc(this.$route.query.uid).update({
+        friendRequests: request.filter((value)=>{
+          return value !== auth.currentUser.uid
+        })
+      })
+
+      const pendingDoc = await db.collection('friends').doc(auth.currentUser.uid).get()
+      const pendingList = pendingDoc.data()
+      let pending = pendingList.pendingFriends
+      await db.collection('friends').doc(auth.currentUser.uid).update({
+        pendingFriends: pending.filter((value)=>{
+          return value !== this.$route.query.uid
+        })
+      })
+      await this.reloadData()
+    },
     morePost(){
       this.getPosts(this.items)
     },
@@ -316,13 +418,14 @@ export default {
     },
     async getPosts(items){
       let post
+      console.log(this.$route.query.uid)
       if(this.endPost === null) {
-        const doc = await db.collection('posts').where('uid', '==',auth.currentUser.uid).orderBy('pid', "desc").get()
+        const doc = await db.collection('posts').where('uid', '==',this.$route.query.uid).orderBy('pid', "desc").get()
         this.endPost = doc.docs[doc.docs.length -1]
-        post = await db.collection('posts').where('uid', '==',auth.currentUser.uid).orderBy('pid', "desc").limit(5).get()
+        post = await db.collection('posts').where('uid', '==',this.$route.query.uid).orderBy('pid', "desc").limit(5).get()
       }
       else{
-        post = await db.collection('posts').where('uid', '==',auth.currentUser.uid).orderBy('pid', "desc").startAfter( this.lastPost).limit(5).get()
+        post = await db.collection('posts').where('uid', '==',this.$route.query.uid).orderBy('pid', "desc").startAfter( this.lastPost).limit(5).get()
       }
       post.docs.forEach( doc =>{
         const aux = doc.data();
@@ -349,56 +452,25 @@ export default {
       }else{
         console.log('es null pá')
       }
-    },
-    updateActivities() {
-      this.dialog = false;
-      console.log(this.nuevaFecha);
-      db.collection('users').doc(auth.currentUser.uid).get().then( elem => {
-        const activ = elem.data().activities;
-        let len = 0;
-        if ( activ !== undefined){
-          len = activ.length
-        }
-        let auxUrl;
-        if ( this.nuevaImagen.type !== undefined){
-          storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').put(this.nuevaImagen, { contentType: this.nuevaImagen.type } ).then( () =>{
-            storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').getDownloadURL().then( url => {
-              auxUrl = url;
-            }).then(() => {
-              const dia = new Date(this.nuevaFecha)
-              const aux = {
-                place: this.nuevaInstitucion,
-                date: dia,
-                url: auxUrl,
-                datestr: this.formatDate(dia),
-              }
-              this.actividades.push(aux);
-              db.collection('users').doc(auth.currentUser.uid).update({
-                activities: this.actividades
-              }).catch(err => {
-                console.log(err.message);
-              }).finally(()=>{
-                this.nuevaFecha = ''
-                this.nuevaImagen = ''
-                this.nuevaInstitucion = ''
-              })
-            }).catch(err => {
-              console.log(err.message)
-            })
-          }).catch(err => {
-            console.log(err.message);
-          });
-        }
-      }).catch(err => {
-        console.log(err.message)
-      })
-    },
-    uploadImage( event ){
-      this.nuevaImagen = event.target.files[0];
     }
   },
   created() {
-    db.collection('users').doc( auth.currentUser.uid ).get().then( (elem) =>{
+    let indexFriends, indexPending, indexRequests
+
+    db.collection('friends').doc( auth.currentUser.uid ).get().then((elem) =>{
+      const data = elem.data();
+      indexFriends = data.friends.indexOf(this.$route.query.uid )
+      indexPending = data.pendingFriends.indexOf(this.$route.query.uid )
+      indexRequests = data.friendRequests.indexOf(this.$route.query.uid )
+      if(indexFriends !== -1){
+        this.amigos = 1
+      }else if(indexPending !== -1){
+        this.amigos = 2
+      }else if( indexRequests !== -1){
+        this.amigos = 3
+      }
+    })
+    db.collection('users').doc( this.$route.query.uid ).get().then( (elem) =>{
       const data = elem.data();
       this.fullname = auth.currentUser.displayName;
       this.trabajo = data.job;
@@ -414,35 +486,9 @@ export default {
       this.banner = data.banner;
       this.actividades = data.activities;
 
-    }).catch(async e =>{
-      this.created = e.message;
-      const url = await storage.ref('users/start/profile.jpg').getDownloadURL()
-      db.collection('users').doc(auth.currentUser.uid).set({
-        job: '',
-        tag: '',
-        instruments: '',
-        genres: '',
-        bio: '',
-        spotify: '',
-        appleMusic: '',
-        soundcloud: '',
-        youtube: '',
-        banner: '',
-        profilePic: url,
-        activities: [],
-        username: auth.currentUser.displayName,
-        email: auth.currentUser.email,
-        uid: auth.currentUser.uid,
-      }).then(()=>{
-        db.collection('friends').doc(auth.currentUser.uid).set({
-          friends: [],
-          friendRequests: [],
-          pendingFriends: []
-        })
-      }).catch(err =>{
+    }).catch(err =>{
         console.log(err)
-      })
-    });
+      });
     this.toggled = false;
   }
 

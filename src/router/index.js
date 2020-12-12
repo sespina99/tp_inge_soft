@@ -18,6 +18,8 @@ import ExplorarArtistasView from "@/views/ExplorarArtistasView";
 import ExplorarInstitutosView from "@/views/ExplorarInstitutosView";
 import EditarPerfilView from "@/views/EditarPerfilView";
 import MensajesView from "@/views/MensajesView";
+import PerfilExternoView from "@/views/PerfilExternoView";
+
 
 Vue.use(VueRouter)
 
@@ -56,6 +58,7 @@ const routes = [
     path: '/PerfilExterno',
     name: 'PerfilExterno',
     component: PerfilExternoView,
+    props:route => ({uid: route.query.uid})
   },
   {
     path: '/EditarPerfil',
