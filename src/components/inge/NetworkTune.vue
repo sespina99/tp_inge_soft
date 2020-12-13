@@ -219,7 +219,7 @@ solicitudes_abierto: true,
       friends: [],
       maxFriend: 0,
       isMaxFriend: false,
-      maxPending: 5,
+      maxPending: 0,
       isMaxPending: true,
       requests: [],
     }

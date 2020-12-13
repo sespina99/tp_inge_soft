@@ -71,7 +71,7 @@
                   <v-avatar
                       size="48"
                   >
-                    <v-img contain style="size: initial" src="../../assets/profilePic.png"/>
+                    <v-img contain style="size: initial" :src="image"/>
                   </v-avatar>
                 </v-btn>
               </template>
@@ -120,6 +120,7 @@ import {auth, db} from "@/db";
 export default {
   data() {
     return {
+      image: '',
       home_link: '/Home',
       explorar_link: '/Explorar',
       network_link: '/Network',
@@ -134,7 +135,12 @@ export default {
       onProfileScreen: false,
     }
   },
-
+  async beforeMount() {
+    await db.collection('users').doc( auth.currentUser.uid ).get().then( (elem) =>{
+      const data = elem.data();
+      this.image = data.profilePic;
+    })
+  },
   methods: {
 
     closeSession() {
