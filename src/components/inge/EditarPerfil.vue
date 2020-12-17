@@ -137,10 +137,6 @@
             ></v-text-field>
 
           </div>
-<!--          No se si el this.delteAcount/() funciona lo agregue yo, no lyle-->
-          <v-btn style="background-color: #E78200;alignment: center;margin-bottom: 2%;color: white; " @click="this.deleteAccount()" text>
-            Eliminar Cuenta
-          </v-btn>
           <v-row>
             <v-divider></v-divider>
             <v-btn style="background-color: #4AD5E1;alignment: center;margin-bottom: 2%;color: white" text x-large

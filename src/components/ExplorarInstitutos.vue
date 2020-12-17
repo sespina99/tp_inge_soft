@@ -10,7 +10,7 @@
 
         <br>
         <v-card-title style="padding: 0" class="pl-2" contain>
-          <div>Explorar Institutos y Bares Cercanos <br></div>
+          <div>Explorar Institutos y Bares<br></div>
           <v-spacer></v-spacer>
           <v-text-field style="margin-right:20px" prepend-inner-icon="mdi-magnify" placeholder="Buscar" v-model="searchUsr" v-on:keyup.enter="reloadData"></v-text-field>
         </v-card-title>
@@ -47,6 +47,7 @@
                       <v-list-item-title><h3>{{ item.username }}</h3></v-list-item-title>
                       <v-list-item-subtitle>{{ item.genre }}</v-list-item-subtitle>
                     </v-col>
+                    <v-spacer></v-spacer>
                     <v-col cols="3">
                       <v-list-item-title>
                         <v-btn @click="contactBtn(item.uid)">

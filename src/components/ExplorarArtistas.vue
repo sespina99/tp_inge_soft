@@ -2,28 +2,6 @@
 
   <v-container color="black" flat style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
 <!--    <h1 style="text-align: center">Explorar Artistas</h1>-->
-
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-col cols="1">
-      <span style="text-align: right">
-        <br>Ordenar por:</span>
-      </v-col>
-      <v-col cols="2">
-        <v-select :items="orden" style="max-width: 60%;border-style: none" placeholder="Relevancia"></v-select>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-      <v-spacer></v-spacer>
-    </v-row>
-
     <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
 
       <div style="height: auto">

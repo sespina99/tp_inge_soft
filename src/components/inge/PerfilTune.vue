@@ -166,7 +166,7 @@
                   :key="item.date.seconds"
               >
                 <v-list-item-icon>
-                  <v-img :src="item.url"></v-img>
+                  <v-img height="200px" width="300px" :src="item.url"></v-img>
                 </v-list-item-icon>
 
                 <v-list-item-content>
@@ -227,15 +227,15 @@
                     <div v-html="item.text">
                     </div>
                   </v-card-actions>
-                  <div style="padding-bottom: 1%">
-                    <v-img v-if="item.image" :src="item.image"
-                           aspect-ratio="1.5"
-                           max-height="500"
-                           contain
-                    ></v-img>
-                  </div>
-
-
+                  <v-container>
+                    <v-carousel v-if="item.postPic.length !== 0">
+                      <v-carousel-item v-for="image in item.postPic"
+                                       :key="image"
+                                       style="height:200px"
+                                       :src="image">
+                      </v-carousel-item>
+                    </v-carousel>
+                  </v-container>
                 </v-card-text>
 
               </v-card>
@@ -333,6 +333,7 @@ export default {
             time: aux.timestr,
             date: aux.datestr,
             tag: usr.tag,
+            postPic: aux.urls,
           }
           items.push(item);
         })

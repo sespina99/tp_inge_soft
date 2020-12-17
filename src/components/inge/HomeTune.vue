@@ -41,7 +41,7 @@
           <v-card-actions style="padding-top: 0;padding-bottom: 0">
             <v-spacer></v-spacer>
             <v-col cols="2" class="mr-auto" style="padding-top: 0">
-              <input v-if="emailVerified" type="file" multiple @change="uploadFiles" accept="image/*, video/*"/>
+              <input v-if="emailVerified" type="file" multiple @change="uploadFiles" accept="image/*"/>
             </v-col>
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
@@ -55,8 +55,8 @@
               <v-btn color="#47D6D7" :loading="btnLoading" v-if="emailVerified" @click="postBtn()">
                 Publicar
               </v-btn>
-              <v-card-text v-if="!emailVerified">tiene que verificar el email para postear</v-card-text>
-              <v-btn v-if="!emailVerified" @click="resendEmail">reenviar email</v-btn>
+              <v-card-text v-if="!emailVerified">Tiene que verificar el email para postear</v-card-text>
+              <v-btn v-if="!emailVerified" @click="resendEmail">Reenviar email</v-btn>
             </v-col>
           </v-card-actions>
 
