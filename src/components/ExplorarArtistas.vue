@@ -81,7 +81,7 @@
                     <v-spacer></v-spacer>
                     <v-col cols="3">
                       <v-list-item-title >
-                        <v-btn >
+                        <v-btn @click="contactBtn(item.uid)">
                           <v-icon>mdi-forum</v-icon>
                           Contactar
                         </v-btn>
@@ -158,6 +158,9 @@ export default {
     }
   },
       methods: {
+        async contactBtn(uid){
+          await this.$router.push({path: '/Mensajes', query:{uid: uid}});
+        },
         async reloadData() {
           try {
             this.items = [];
@@ -172,6 +175,7 @@ export default {
           }
         },
         moreUsr(){
+
           this.getUsr(this.items)
         },
         clickBtn(a){

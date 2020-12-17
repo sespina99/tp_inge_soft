@@ -16,7 +16,7 @@
             </v-col>
             <v-spacer></v-spacer>
 
-            <v-btn style="background-color: #4ad5e1;color: white" router :to="mensajes_link">
+            <v-btn style="background-color: #4ad5e1;color: white" router @click="contactBtn()">
               <v-icon>mdi-forum</v-icon>
               Mandar mensaje</v-btn>
             <v-btn  v-if="amigos === 3"  @click="acceptFriend(true)">
@@ -248,6 +248,9 @@ export default {
     }
   },
   methods: {
+    async contactBtn(){
+      await this.$router.push({path: '/Mensajes', query:{uid: this.$route.query.uid}});
+    },
     async reloadData(){
       this.lastPost = null
       this.endPost = null

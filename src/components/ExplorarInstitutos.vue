@@ -49,7 +49,7 @@
                     </v-col>
                     <v-col cols="3">
                       <v-list-item-title>
-                        <v-btn>
+                        <v-btn @click="contactBtn(item.uid)">
 <!--                          aca no deberia llevarme al perfil el v-icon?-->
                           <v-icon >mdi-forum</v-icon>
                           <v-spacer></v-spacer>
@@ -111,6 +111,9 @@ export default {
     }
   },
   methods:{
+    async contactBtn(uid){
+      await this.$router.push({path: '/Mensajes', query:{uid: uid}});
+    },
     async reloadData() {
       try {
         this.items = [];

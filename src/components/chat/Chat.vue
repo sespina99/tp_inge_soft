@@ -14,9 +14,9 @@
             class="overflow-y-auto fill-height"
             height="500"
         >
-          <v-list subheader>
+          <v-list subheader >
             <v-list-item-group v-model="activeChat">
-              <template v-for="(item, index) in parents">
+              <template v-for="(item, index) in parents" >
                 <v-list-item
                     :key="`parent${index}`"
                     :value="item.id"
@@ -57,8 +57,11 @@
               flat
 
           >
-            <v-card-title>
-              john doe
+            <v-card-title v-if="this.parents.length === 0">
+              no tienes chats
+            </v-card-title>
+            <v-card-title v-if=" this.parents.length !== 0">
+              {{parents[activeChat-1].name}}
             </v-card-title>
             <v-card-text style="min-height: 80%;max-height: 500px">
 
@@ -107,9 +110,10 @@
               </template>
               </v-responsive>
             </v-card-text>
-            <v-card-text >
+            <v-card-text v-if="this.parents.length !== 0">
               <NewMessage  :toUid="activeUid" :messages="this.messages"></NewMessage>
             </v-card-text>
+
           </v-card>
         </v-responsive>
       </v-col>
@@ -125,15 +129,21 @@ import NewMessage from "@/components/chat/NewMessage";
 import {auth, db} from "@/db";
 export default {
   components: {NewMessage},
+  props:{
+    uid: String
+  },
   data() {
     return {
-      activeChat: 1,
+      activeChat: -1,
       parents:[],
       messages:[],
       activeUid: '',
     }
   },
   async beforeMount() {
+    if(this.$route.query.uid === null){
+      this.activeChat = 1
+    }
     await db.collection('chats').where('uidFrom', '==',auth.currentUser.uid).orderBy('lastMessageTime', "desc").onSnapshot(async (users)=>{
       let i = 1
       this.parents = []
@@ -143,7 +153,11 @@ export default {
         const message = aux.messages
         await db.collection('users').doc(aux.uidTo).get().then( usr =>{
           if(this.activeChat === undefined){
-            this.activeChat = 1
+            if(this.$route.query.uid === null){
+              this.activeChat = 1
+            }else{
+              this.activeChat = -1
+            }
           }
           const user = usr.data()
           const aux2 = {
@@ -153,14 +167,31 @@ export default {
             uid: user.uid,
             lastmessage: message[message.length-1]
           }
-          if(aux2.id === this.activeChat){
+          if( (this.activeChat!==-1 && aux2.id === this.activeChat) || (this.activeChat === -1 && aux2.uid === this.$route.query.uid) ){
             this.messages = message
             this.activeUid = user.uid
+            this.activeChat = aux2.id
           }
           this.parents.push(aux2)
         })
 
         i++
+      }
+      console.log(this.activeChat)
+      if(this.activeChat === -1){
+        await db.collection('users').doc(this.$route.query.uid.toString()).get().then((usr)=>{
+          const user = usr.data()
+          const aux = {
+            id: new Number(i).valueOf(),
+            name: user.username,
+            avatar: user.profilePic,
+            uid: user.uid,
+            lastmessage: ''
+          }
+          this.activeUid = aux.uid
+          this.activeChat = aux.id
+          this.parents.push(aux)
+        })
       }
     })
 

@@ -20,6 +20,7 @@ export default {
     'app-footer': Footer,
   },
 
+
   data() {
     return {
     }

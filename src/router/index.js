@@ -69,6 +69,7 @@ const routes = [
     path: '/Mensajes',
     name: 'Mensajes',
     component: MensajesView,
+    props:route => ({uid: route.query.uid})
   },
   {
     path: '/ExplorarArtistas',

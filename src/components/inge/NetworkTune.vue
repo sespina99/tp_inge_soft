@@ -168,7 +168,7 @@
                     <v-spacer></v-spacer>
                     <v-col cols="3">
                       <v-list-item-title >
-                        <v-btn @click="deleteFriend(item.uid)">
+                        <v-btn @click="contactBtn(item.uid)">
                           <v-icon>mdi-forum</v-icon>
                           Contactar
                         </v-btn>
@@ -232,7 +232,10 @@ solicitudes_abierto: true,
     console.log(this.requests)
   },
   methods: {
-    async deleteFriend(uid){
+    async contactBtn(uid){
+      await this.$router.push({path: '/Mensajes', query:{uid: uid}});
+    },
+    /*async deleteFriend(uid){
       try {
         let friends
         let index
@@ -264,7 +267,7 @@ solicitudes_abierto: true,
         console.log(e.message)
       }
 
-    },
+    },*/
     moreFriends(){
       this.maxFriend += 5
       if(this.maxFriend >= this.friends.length)

@@ -51,7 +51,7 @@
             <v-btn text style="alignment: center;color: white" router :to="network_link">Network</v-btn>
           </v-col>
           <v-col cols="1">
-            <v-btn text style="alignment: bottom;color: white" router :to="mensajes_link">Mensajes</v-btn>
+            <v-btn text style="alignment: bottom;color: white" router @click="messageBtn">Mensajes</v-btn>
           </v-col>
           <v-col cols="1">
             <v-menu
@@ -132,6 +132,9 @@ export default {
   },
   methods: {
 
+    async messageBtn(){
+      await this.$router.push({path: this.mensajes_link, query:{uid: null}});
+    },
     closeSession() {
       auth.signOut().then(async ()=>{
         await this.$router.push('/');

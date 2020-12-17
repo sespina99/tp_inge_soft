@@ -5,13 +5,6 @@
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
-      <v-col cols="1">
-      <span style="text-align: right">
-        <br>Ordenar por:</span>
-      </v-col>
-      <v-col cols="2">
-        <v-select :items="orden" style="max-width: 50%;border-style: none" placeholder="Reciente"></v-select>
-      </v-col>
       <v-spacer></v-spacer>
     </v-row>
     <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
@@ -48,7 +41,7 @@
           <v-card-actions style="padding-top: 0;padding-bottom: 0">
             <v-spacer></v-spacer>
             <v-col cols="2" class="mr-auto" style="padding-top: 0">
-              <input v-if="emailVerified" type="file" @change="uploadFiles" accept="image/*, video/*"/>
+              <input v-if="emailVerified" type="file" multiple @change="uploadFiles" accept="image/*, video/*"/>
             </v-col>
             <v-spacer></v-spacer>
             <v-spacer></v-spacer>
@@ -59,7 +52,7 @@
 
 
             <v-col cols="auto" style="padding-top: 0">
-              <v-btn color="#47D6D7" v-if="emailVerified" @click="postBtn()">
+              <v-btn color="#47D6D7" :loading="btnLoading" v-if="emailVerified" @click="postBtn()">
                 Publicar
               </v-btn>
               <v-card-text v-if="!emailVerified">tiene que verificar el email para postear</v-card-text>
@@ -99,8 +92,8 @@
                   </v-col>
 
                   <v-col cols="3">
-                    <v-list-item-title >
-                      <v-btn style="alignment-self: end" right router :to="mensajes_link">
+                    <v-list-item-title v-if="funcCondition(item.uid)" >
+                      <v-btn style="alignment-self: end" right router @click="contactBtn(item.uid)">
                         <v-icon>mdi-forum</v-icon>
                         Contactar
                       </v-btn>
@@ -118,12 +111,11 @@
               </div>
             </v-card-actions>
             <v-container>
-              <v-carousel>
-                <v-carousel-item v-for="image in images"
-                                 :key="image.alt"
+              <v-carousel v-if="item.postPic.length !== 0">
+                <v-carousel-item v-for="image in item.postPic"
+                                 :key="image"
                                  style="height:200px"
-                                 :src="image.src"
-                                 :alt="image.alt">
+                                 :src="image">
                 </v-carousel-item>
               </v-carousel>
             </v-container>
@@ -171,11 +163,14 @@ export default {
       hasMorePost: true,
       postFiles: [],
       foto: '',
-      emailVerified: true
+      emailVerified: true,
+      currentUsr: '',
+      btnLoading: false
     }
   },
   async beforeMount() {
     try {
+      this.currentUsr = auth.currentUser.uid
       this.emailVerified = auth.currentUser.emailVerified
       await db.collection('users').doc(auth.currentUser.uid).get().then((data)=>{
         const aux = data.data()
@@ -224,6 +219,14 @@ export default {
     }
   },
   methods:{
+    funcCondition(uid){
+      if(uid === this.currentUsr)
+        return false
+      return true
+    },
+    async contactBtn(uid){
+      await this.$router.push({path: this.mensajes_link, query:{uid: uid}});
+    },
     async clickProfile(uid){
       console.log(uid)
       if(uid === auth.currentUser.uid){
@@ -302,6 +305,7 @@ export default {
               time: aux.timestr,
               date: aux.datestr,
               tag: usr.tag,
+              postPic: aux.urls
             }
             items.push(item);
           })
@@ -319,27 +323,45 @@ export default {
       }
     },
     async postBtn(){
-      this.addPost();
-      this.lastPost = null;
-      await this.reloadData();
+      this.btnLoading = true
+      if(this.text.length !== 0){
+        await this.addPost();
+        this.lastPost = null;
+        await this.reloadData();
+      }
+      this.btnLoading = false
     },
-    addPost(){
+    async addPost(){
       const today = new Date
       const postid = Date.now()
       let i = 0
-      this.postFiles.forEach(async (elem) => {
+      for(const elem of this.postFiles){
         await storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i++).put(elem, {contentType: elem.type}).catch((e)=>{console.log(e)})
-      })
+      }
+      /*await this.postFiles.forEach((elem) => {
+        storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i++).put(elem, {contentType: elem.type}).catch((e)=>{console.log(e)})
+      })*/
       let urlTest = []
       i = 0
-      this.postFiles.forEach((elem) =>{
+
+      for(const elem of this.postFiles){
+        await storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i).getDownloadURL().then((url) =>{
+          urlTest.push(url)
+        }).catch(()=>{
+          console.log(elem)
+        })
+        i++
+      }
+      /*
+      await this.postFiles.forEach((elem) =>{
         storage.ref('users/' + auth.currentUser.uid + '/posts/' + postid + '/' + i).getDownloadURL().then((url) =>{
           urlTest.push(url)
         }).catch(()=>{
           console.log(elem)
         })
         i++
-      })
+      })*/
+      console.log(urlTest)
       db.collection('posts').doc(postid.toString()).set({
         text: this.text,
         pid: postid,
