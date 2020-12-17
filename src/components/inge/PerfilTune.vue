@@ -350,6 +350,119 @@ export default {
         console.log('es null pá')
       }
     },
+    startBd(){
+      const message1 = []
+      const message2 = []
+      const message3 = []
+      const message4 = []
+      message1.push({
+        date: Date.now(),
+        message: 'hola pa',
+        me: true
+      })
+      message1.push({
+        date: Date.now(),
+        message: 'que onda bro',
+        me: false
+      })
+      message1.push({
+        date: Date.now(),
+        message: 'todo bien?',
+        me: false
+      })
+      message1.push({
+        date: Date.now(),
+        message: 'bien vos?',
+        me: true
+      })
+
+
+      message2.push({
+        date: Date.now(),
+        message: 'hola pa',
+        me: false
+      })
+      message2.push({
+        date: Date.now(),
+        message: 'que onda bro',
+        me: true
+      })
+      message2.push({
+        date: Date.now(),
+        message: 'todo bien?',
+        me: true
+      })
+      message2.push({
+        date: Date.now(),
+        message: 'bien vos?',
+        me: false
+      })
+
+      message3.push({
+        date: Date.now(),
+        message: 'que pasa bro',
+        me: false
+      })
+      message3.push({
+        date: Date.now(),
+        message: 'que onda pa',
+        me: true
+      })
+      message3.push({
+        date: Date.now(),
+        message: 'todo piola?',
+        me: true
+      })
+      message3.push({
+        date: Date.now(),
+        message: 'sisi vos?',
+        me: false
+      })
+
+      message4.push({
+        date: Date.now(),
+        message: 'que pasa bro',
+        me: true
+      })
+      message4.push({
+        date: Date.now(),
+        message: 'que onda pa',
+        me: false
+      })
+      message4.push({
+        date: Date.now(),
+        message: 'todo piola?',
+        me: false
+      })
+      message4.push({
+        date: Date.now(),
+        message: 'sisi vos?',
+        me: true
+      })
+
+      db.collection('chats').doc(auth.currentUser.uid + 'NyQt9JKHGcPbfki5UteLsfWJsUf1').set({
+        messages: message1,
+        uidTo: 'NyQt9JKHGcPbfki5UteLsfWJsUf1',
+        uidFrom: auth.currentUser.uid
+      })
+      db.collection('chats').doc('NyQt9JKHGcPbfki5UteLsfWJsUf1' + auth.currentUser.uid).set({
+        messages: message2,
+        uidTo: auth.currentUser.uid,
+        uidFrom: 'NyQt9JKHGcPbfki5UteLsfWJsUf1'
+      })
+
+
+      db.collection('chats').doc(auth.currentUser.uid + 'EiJByIl4nvTLJ6jUaa6xAy2Waim1').set({
+        messages: message3,
+        uidTo: 'EiJByIl4nvTLJ6jUaa6xAy2Waim1',
+        uidFrom: auth.currentUser.uid
+      })
+      db.collection('chats').doc('EiJByIl4nvTLJ6jUaa6xAy2Waim1' + auth.currentUser.uid).set({
+        messages: message4,
+        uidTo: auth.currentUser.uid,
+        uidFrom: 'EiJByIl4nvTLJ6jUaa6xAy2Waim1'
+      })
+    },
     updateActivities() {
       this.dialog = false;
       console.log(this.nuevaFecha);
