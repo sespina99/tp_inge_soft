@@ -54,7 +54,6 @@
             <v-btn text style="alignment: bottom;color: white" router :to="mensajes_link">Mensajes</v-btn>
           </v-col>
           <v-col cols="1">
-              <v-icon large style="alignment: center" color="white">mdi-bell</v-icon>
             <v-menu
                 bottom
                 min-width="200px"
@@ -66,10 +65,10 @@
                     x-large
                     v-on="on"
                 >
-                  <v-avatar color="white"
+                  <v-avatar
                   >
-                    <v-icon >
-                      mdi-account-circle
+                    <v-icon color="white">
+                      mdi-account
                     </v-icon>
                   </v-avatar>
                 </v-btn>

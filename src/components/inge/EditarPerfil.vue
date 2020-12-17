@@ -264,9 +264,7 @@ export default {
     },
     getBannerUrl: function () {
       return this.banner;
-    }
-
-
+    },
   },
   methods: {
     async submit() {

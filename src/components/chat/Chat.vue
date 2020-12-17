@@ -61,11 +61,13 @@
               john doe
             </v-card-title>
             <v-card-text style="min-height: 80%;max-height: 500px">
+
               <v-responsive
                   class="overflow-y-auto fill-height"
                   height="500"
+
               >
-              <template v-for="(msg, i) in this.messages">
+                  <template v-for="(msg, i) in this.messages">
                 <div v-bind:key="i"
                     :class="{ 'd-flex flex-row-reverse': msg.me }"
                 >
@@ -106,7 +108,7 @@
               </v-responsive>
             </v-card-text>
             <v-card-text >
-              <NewMessage :toUid="activeUid" :messages="this.messages"></NewMessage>
+              <NewMessage  :toUid="activeUid" :messages="this.messages"></NewMessage>
             </v-card-text>
           </v-card>
         </v-responsive>
@@ -129,21 +131,20 @@ export default {
       parents:[],
       messages:[],
       activeUid: '',
-      messageForm: {
-        content: "",
-        me: true,
-        created_at: "11:11am"
-      }
     }
   },
   async beforeMount() {
-
-    const users = await db.collection('chats').where('uidFrom', '==',auth.currentUser.uid).orderBy('lastMessageTime', "desc").get()
-    let i = 1
-    for (const doc of users.docs) {
+    await db.collection('chats').where('uidFrom', '==',auth.currentUser.uid).orderBy('lastMessageTime', "desc").onSnapshot(async (users)=>{
+      let i = 1
+      this.parents = []
+      this.messages = []
+      for (const doc of users.docs) {
         const aux = doc.data()
         const message = aux.messages
         await db.collection('users').doc(aux.uidTo).get().then( usr =>{
+          if(this.activeChat === undefined){
+            this.activeChat = 1
+          }
           const user = usr.data()
           const aux2 = {
             id: new Number(i).valueOf(),
@@ -160,13 +161,13 @@ export default {
         })
 
         i++
-    }
+      }
+    })
+
   },
   methods:{
     formatDate(fecha){
       const today = new Date(fecha)
-      const date = today.toISOString().substr(0, 10)
-      const [year, month, day] = date.split('-')
 
       const h = today.getHours();
       const min = today.getMinutes();
@@ -180,7 +181,7 @@ export default {
         hStr = '0'
       }
       hStr = hStr + h.toString()
-      return `${hStr}:${minStr}` + '  ' + `${day}/${month}/${year}`
+      return `${hStr}:${minStr}`
 
     },
     async itemClick(index){
