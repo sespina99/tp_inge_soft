@@ -50,7 +50,9 @@
                     <v-col cols="3">
                       <v-list-item-title>
                         <v-btn>
-                          <v-icon>mdi-forum</v-icon>
+<!--                          aca no deberia llevarme al perfil el v-icon?-->
+                          <v-icon >mdi-forum</v-icon>
+                          <v-spacer></v-spacer>
                           Contactar
                         </v-btn>
                       </v-list-item-title>

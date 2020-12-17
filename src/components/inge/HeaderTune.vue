@@ -54,9 +54,7 @@
             <v-btn text style="alignment: bottom;color: white" router :to="mensajes_link">Mensajes</v-btn>
           </v-col>
           <v-col cols="1">
-            <v-btn icon large style="alignment: center">
-              <v-icon color="white">mdi-bell</v-icon>
-            </v-btn>
+              <v-icon large style="alignment: center" color="white">mdi-bell</v-icon>
             <v-menu
                 bottom
                 min-width="200px"
@@ -68,10 +66,11 @@
                     x-large
                     v-on="on"
                 >
-                  <v-avatar
-                      size="48"
+                  <v-avatar color="white"
                   >
-                    <v-img contain style="size: initial" :src="image"/>
+                    <v-icon >
+                      mdi-account-circle
+                    </v-icon>
                   </v-avatar>
                 </v-btn>
               </template>
@@ -92,15 +91,6 @@
                         text
                     >
                       Cerrar Sesion
-                    </v-btn>
-                    <v-divider class="my-3"></v-divider>
-                    <v-btn
-                        depressed
-                        rounded
-                        text
-                        @click="this.deleteAccount"
-                    >
-                      Eliminar Cuenta
                     </v-btn>
                   </div>
                 </v-list-item-content>

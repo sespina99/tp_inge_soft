@@ -89,7 +89,7 @@
 
               </v-btn>
 
-              <v-list-item-content>
+              <v-list-item-content style="margin-left: 20px">
                 <v-row>
                   <v-col cols=9>
                     <v-list-item-title ><h3>{{ item.title }}</h3></v-list-item-title>
@@ -111,7 +111,7 @@
             </v-list-item>
           </template>
 
-          <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
+          <v-card-text style="font-size:16px; padding:0; color: black"  contain>
             <v-card-actions style="padding-right: 3%;padding-left: 5%">
               <div v-html="item.text">
               </div>

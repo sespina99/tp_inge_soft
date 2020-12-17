@@ -4,148 +4,152 @@
 
     <v-card class="mx-auto" max-width="50%" style=" margin-bottom: 4%">
       <v-form ref="form">
-      <v-row>
-        <v-spacer></v-spacer>
-        <v-col cols="2">
-          <v-btn style="background-color: grey;color: white" right router to="/Perfil">
-            Cancelar
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-card-text style="margin-top: 10px; margin-bottom: 10px;font-size:0.8em; padding:0" class="pl-2" contain>
-        <h4>Imagen de fondo</h4>
-        <v-img :src="getBannerUrl">
-          <input type="file" @change="uploadBanner" accept="image/*"/>
-        </v-img>
-      </v-card-text>
-      <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
-        <h4>Imagen de Perfil</h4>
-
-        <v-img  :src="getProfileUrl" contain>
-          <input type="file" @change="uploadProfilePic" accept="image/*"/>
-        </v-img>
-      </v-card-text>
-
-      <br>
-      <v-card-title style="padding: 0" class="pl-2" contain></v-card-title>
-      <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
-        <h4>Nombre de usuario:</h4>
-
-        <v-text-field
-            v-model="fullname"
-            :error-messages="fullnameErrors"
-            label="Nombre de usuario"
-            solo
-            required
-            @input="this.$v.fullname.$touch()"
-            @blur="this.$v.fullname.$touch()"
-        ></v-text-field>
-      </v-card-text>
-
-      <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
-        <h4>Tag:</h4>
-        <v-select
-            v-model="tag"
-            :items="tags"
-            :error-messages="tagErrors"
-            label="Tag"
-            solo
-            required
-            @change="this.$v.tag.$touch()"
-            @blur="this.$v.tag.$touch()"
-        ></v-select>
-        <h4>Profesión:</h4>
-        <v-text-field
-            v-model="trabajo"
-            label="Profesion"
-            solo
-            @input="this.$v.trabajo.$touch()"
-            @blur="this.$v.trabajo.$touch()"
-        ></v-text-field>
-        <h4>Instrumentos:</h4>
-        <v-text-field
-            v-model="instrumentos"
-            label="Instrumentos"
-            solo
-            @input="this.$v.instrumentos.$touch()"
-            @blur="this.$v.instrumentos.$touch()"
-        ></v-text-field>
-        <h4>Géneros: </h4>
-        <v-select
-            v-model="generos"
-            :items="categories"
-            label="Genero"
-            solo
-            required
-            @change="this.$v.generos.$touch()"
-            @blur="this.$v.generos.$touch()"
-        ></v-select>
-        <h4>Acerca de: <br></h4>
-        <v-text-field
-            v-model="acerca"
-            :error-messages="acercaErrors"
-            label="Acerca de"
-            solo
-            required
-            @input="this.$v.acerca.$touch()"
-            @blur="this.$v.acerca.$touch()"
-        ></v-text-field>
-        <h4>Referencias: <br></h4>
-        <div>
-          <v-col cols="1">
-            <v-img style="size: initial" src="../../assets/spotify.png"/>
-          </v-col>
-          <v-text-field
-              v-model="ref_spotify"
-              label="https://spotify.com/..."
-              solo
-              @input="this.$v.ref_spotify.$touch()"
-              @blur="this.$v.ref_spotify.$touch()"
-              :rules="spotifyRule"
-          ></v-text-field>
-          <v-col cols="1">
-            <v-img min-height="3'%" max-height="30%" style="size: initial" src="../../assets/apple.png"/>
-          </v-col>
-          <v-text-field
-              v-model="ref_apple"
-              label="https://music.apple.com/ar/artist/..."
-              solo
-              @input="this.$v.ref_apple.$touch()"
-              @blur="this.$v.ref_apple.$touch()"
-              :rules="appleRule"
-          ></v-text-field>
-          <v-col cols="1" style="padding-top: 0">
-            <v-img style="size: initial" src="../../assets/youtube.png"/>
-          </v-col>
-          <v-text-field
-              v-model="ref_youtube"
-              label="https://www.youtube.com/channel/..."
-              solo
-              @input="this.$v.ref_youtube.$touch()"
-              @blur="this.$v.ref_youtube.$touch()"
-              :rules="youtubeRule"
-          ></v-text-field>
-          <v-col cols="1" style="padding-top: 0">
-            <v-img min-width="30%" max-width="80%" align="center" src="../../assets/soundcloud.png"/>
-          </v-col>
-          <v-text-field
-              v-model="ref_soundcloud"
-              label="https://soundcloud.com/..."
-              solo
-              @input="this.$v.ref_soundcloud.$touch()"
-              @blur="this.$v.ref_soundcloud.$touch()"
-              :rules="soundcloudRule"
-          ></v-text-field>
-        </div>
         <v-row>
-          <v-divider></v-divider>
-          <v-btn style="background-color: #4AD5E1;alignment: center;margin-bottom: 2%;color: white" text x-large
-                 width="60%" @click="submit()">
-            Confirmar cambios
-          </v-btn>
-          <v-divider></v-divider>
+          <v-spacer></v-spacer>
+          <v-col cols="2">
+            <v-btn style="background-color: grey;color: white" right router to="/Perfil">
+              Cancelar
+            </v-btn>
+          </v-col>
         </v-row>
-      </v-card-text>
+        <v-card-text style="margin-top: 10px; margin-bottom: 10px;font-size:0.8em; padding:0" class="pl-2" contain>
+          <h4>Imagen de fondo</h4>
+          <input type="file" @change="uploadBanner" accept="image/*"/>
+          <v-img height="500px" :src="getBannerUrl">
+          </v-img>
+        </v-card-text>
+        <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
+          <h4>Imagen de Perfil</h4>
+          <input type="file" @change="uploadProfilePic" accept="image/*"/>
+          <v-img height="100px" width="100px" :src="getProfileUrl" >
+          </v-img>
+        </v-card-text>
+
+        <br>
+        <v-card-title style="padding: 0" class="pl-2" contain></v-card-title>
+        <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
+          <h4>Nombre de usuario:</h4>
+
+          <v-text-field
+              v-model="fullname"
+              :error-messages="fullnameErrors"
+              label="Nombre de usuario"
+              solo
+              required
+              @input="this.$v.fullname.$touch()"
+              @blur="this.$v.fullname.$touch()"
+          ></v-text-field>
+        </v-card-text>
+
+        <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
+          <h4>Tag:</h4>
+          <v-select
+              v-model="tag"
+              :items="tags"
+              :error-messages="tagErrors"
+              label="Tag"
+              solo
+              required
+              @change="this.$v.tag.$touch()"
+              @blur="this.$v.tag.$touch()"
+          ></v-select>
+          <h4>Profesión:</h4>
+          <v-text-field
+              v-model="trabajo"
+              label="Profesion"
+              solo
+              @input="this.$v.trabajo.$touch()"
+              @blur="this.$v.trabajo.$touch()"
+          ></v-text-field>
+          <h4>Instrumentos:</h4>
+          <v-text-field
+              v-model="instrumentos"
+              label="Instrumentos"
+              solo
+              @input="this.$v.instrumentos.$touch()"
+              @blur="this.$v.instrumentos.$touch()"
+          ></v-text-field>
+          <h4>Géneros: </h4>
+          <v-select
+              v-model="generos"
+              :items="categories"
+              label="Genero"
+              solo
+              required
+              @change="this.$v.generos.$touch()"
+              @blur="this.$v.generos.$touch()"
+          ></v-select>
+          <h4>Acerca de: <br></h4>
+          <v-text-field
+              v-model="acerca"
+              :error-messages="acercaErrors"
+              label="Acerca de"
+              solo
+              required
+              @input="this.$v.acerca.$touch()"
+              @blur="this.$v.acerca.$touch()"
+          ></v-text-field>
+          <h4>Referencias: <br></h4>
+          <div>
+            <v-col cols="1">
+              <v-img style="size: initial" src="../../assets/spotify.png"/>
+            </v-col>
+            <v-text-field
+                v-model="ref_spotify"
+                label="https://spotify.com/..."
+                solo
+                @input="this.$v.ref_spotify.$touch()"
+                @blur="this.$v.ref_spotify.$touch()"
+                :rules="spotifyRule"
+            ></v-text-field>
+            <v-col cols="1">
+              <v-img min-height="3'%" max-height="30%" style="size: initial" src="../../assets/apple.png"/>
+            </v-col>
+            <v-text-field
+                v-model="ref_apple"
+                label="https://music.apple.com/ar/artist/..."
+                solo
+                @input="this.$v.ref_apple.$touch()"
+                @blur="this.$v.ref_apple.$touch()"
+                :rules="appleRule"
+            ></v-text-field>
+            <v-col cols="1" style="padding-top: 0">
+              <v-img style="size: initial" src="../../assets/youtube.png"/>
+            </v-col>
+            <v-text-field
+                v-model="ref_youtube"
+                label="https://www.youtube.com/channel/..."
+                solo
+                @input="this.$v.ref_youtube.$touch()"
+                @blur="this.$v.ref_youtube.$touch()"
+                :rules="youtubeRule"
+            ></v-text-field>
+            <v-col cols="1" style="padding-top: 0">
+              <v-img min-width="30%" max-width="80%" align="center" src="../../assets/soundcloud.png"/>
+            </v-col>
+            <v-text-field
+                v-model="ref_soundcloud"
+                label="https://soundcloud.com/..."
+                solo
+                @input="this.$v.ref_soundcloud.$touch()"
+                @blur="this.$v.ref_soundcloud.$touch()"
+                :rules="soundcloudRule"
+            ></v-text-field>
+
+          </div>
+<!--          No se si el this.delteAcount/() funciona lo agregue yo, no lyle-->
+          <v-btn style="background-color: #E78200;alignment: center;margin-bottom: 2%;color: white; " @click="this.deleteAccount()" text>
+            Eliminar Cuenta
+          </v-btn>
+          <v-row>
+            <v-divider></v-divider>
+            <v-btn style="background-color: #4AD5E1;alignment: center;margin-bottom: 2%;color: white" text x-large
+                   width="60%" @click="submit()">
+              Confirmar cambios
+            </v-btn>
+            <v-divider></v-divider>
+          </v-row>
+        </v-card-text>
       </v-form>
     </v-card>
 
@@ -196,16 +200,16 @@ export default {
       instrumentos: '',
       generos: '',
       acerca: '',
-      appleRule:[
-          v => !v || v.startsWith('https://music.apple.com/ar/artist/') || 'Link invalido'
+      appleRule: [
+        v => !v || v.startsWith('https://music.apple.com/ar/artist/') || 'Link invalido'
       ],
-      spotifyRule:[
+      spotifyRule: [
         v => !v || v.startsWith('https://spotify.com/') || 'Link invalido'
       ],
-      youtubeRule:[
+      youtubeRule: [
         v => !v || v.startsWith('https://www.youtube.com/channel/') || 'Link invalido'
       ],
-      soundcloudRule:[
+      soundcloudRule: [
         v => !v || v.startsWith('https://soundcloud.com/') || 'Link invalido'
       ]
 
@@ -266,7 +270,7 @@ export default {
   },
   methods: {
     async submit() {
-      if(this.$refs.form.validate()) {
+      if (this.$refs.form.validate()) {
         let prof = ''
         let ban = ''
         if (this.profilePic.type !== undefined) {
@@ -300,7 +304,7 @@ export default {
         }).then(async () => {
           await this.$router.push('/Perfil');
         })
-      }else{
+      } else {
         console.log('no funciona asi pá...')
       }
     },

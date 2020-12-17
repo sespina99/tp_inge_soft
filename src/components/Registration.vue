@@ -1,10 +1,10 @@
 <template>
   <div id="Fondo">
-    <v-btn icon id='back' @click="$router.go(-1)" >
-      <v-icon color="black" x-large> mdi-arrow-left </v-icon>
+    <v-btn icon id='back' @click="$router.go(-1)">
+      <v-icon color="black" x-large> mdi-arrow-left</v-icon>
     </v-btn>
     <v-container>
-      <v-img id="imgLogo" class="mx-auto" src="../assets/favicon.png"  max-width="11%" height="20%"></v-img>
+      <v-img id="imgLogo" class="mx-auto" src="../assets/favicon.png" max-width="11%" height="20%"></v-img>
     </v-container>
     <v-card class="mx-auto transparent" max-width="40%" flat>
       <form v-if="!submitted" style="margin: 2%;" id="registerform">
@@ -15,10 +15,10 @@
             v-if="submitError"
             color="red"
             icon="mdi-account"
-            type="error" >
+            type="error">
           <v-row align="center">
             <v-col>
-              {{ mensajeAlertForm}}
+              {{ mensajeAlertForm }}
             </v-col>
             <v-col class="shrink">
               <v-btn @click="submitError = !submitError">Aceptar</v-btn>
@@ -67,16 +67,19 @@
             @input="this.$v.confirmationPassword.$touch()"
             @blur="this.$v.confirmationPassword.$touch()"
         ></v-text-field>
-        <v-checkbox
-            v-model="checkbox"
-            :error-messages="checkboxErrors"
-            class="black--text orangeElement"
-            label="Confirmo que estos son mis datos"
-            required
-            color="#4AD5E1"
-            @change="this.$v.checkbox.$touch()"
-            @blur="this.$v.checkbox.$touch()"
-        ></v-checkbox>
+
+          <v-checkbox
+              background-color="white"
+              v-model="checkbox"
+              rounded
+              :error-messages="checkboxErrors"
+              class="black--text orangeElement"
+              label="Confirmo que estos son mis datos"
+              required
+              color="#4AD5E1"
+              @change="this.$v.checkbox.$touch()"
+              @blur="this.$v.checkbox.$touch()"
+          ></v-checkbox>
       </form>
     </v-card>
 
@@ -87,15 +90,15 @@
         class="mx-auto"
         v-bind:color="sendVerificationError? 'red' : 'green' "
         icon="mdi-information"
-        type="success" >
+        type="success">
       <v-row align="center">
         <v-col>
-          {{ mensajeAlertSubmitted}}
+          {{ mensajeAlertSubmitted }}
         </v-col>
       </v-row>
     </v-alert>
 
-    <v-container v-if="loading" class="text-center" >
+    <v-container v-if="loading" class="text-center">
       <v-progress-circular
           :size="50"
           color="#E78200"
@@ -104,7 +107,7 @@
     </v-container>
 
     <v-container v-if="submitted" class="text-center btnSubmitted">
-      <v-btn class="white--text orangeElement btnSubmitted" router to="/" large width="40%" >
+      <v-btn class="white--text orangeElement btnSubmitted" router to="/" large width="40%">
         Login
       </v-btn>
     </v-container>
@@ -115,7 +118,7 @@
     </v-container>
 
     <v-container v-if="!submitted" class="text-center">
-      <v-btn style="background-color:  #4AD5E1;color: white" @click="submit" large width="40%" >
+      <v-btn style="background-color:  #4AD5E1;color: white" @click="submit" large width="40%">
         Registrarse
       </v-btn>
     </v-container>
@@ -129,20 +132,20 @@
 
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { required, email, sameAs, maxLength} from 'vuelidate/lib/validators'
-import { auth } from '@/db'
+import {validationMixin} from 'vuelidate'
+import {required, email, sameAs, maxLength} from 'vuelidate/lib/validators'
+import {auth} from '@/db'
 
 export default {
   mixins: [validationMixin],
 
   validations: {
-    username : {required, maxLength : maxLength(100)},
-    password:{required, maxLength : maxLength(50)},
-    confirmationPassword:{required,sameAsPassword: sameAs('password'), maxLength : maxLength(50)},
-    email: { required, email, maxLength : maxLength(100) },
+    username: {required, maxLength: maxLength(100)},
+    password: {required, maxLength: maxLength(50)},
+    confirmationPassword: {required, sameAsPassword: sameAs('password'), maxLength: maxLength(50)},
+    email: {required, email, maxLength: maxLength(100)},
     checkbox: {
-      checked (val) {
+      checked(val) {
         return val
       },
     },
@@ -150,49 +153,49 @@ export default {
 
   data: () => ({
     username: '',
-    password:'',
+    password: '',
     mensajeAlertForm: '',
     mensajeAlertSubmitted: 'Se ha enviado el mail de verificacion a su casilla',
-    sendVerificationError : false,
-    submitError : false,
-    submitted : false,
-    confirmationPassword:'',
+    sendVerificationError: false,
+    submitError: false,
+    submitted: false,
+    confirmationPassword: '',
     email: '',
     checkbox: false,
     menu: false,
-    showPass : false,
-    showConfPass : false,
-    loading : false,
+    showPass: false,
+    showConfPass: false,
+    loading: false,
 
   }),
   watch: {
-    menu (val) {
+    menu(val) {
       val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
     },
   },
 
   computed: {
-    checkboxErrors () {
+    checkboxErrors() {
       const errors = []
       if (!this.$v.checkbox.$dirty) return errors
       !this.$v.checkbox.checked && errors.push('Debe confirmar para continuar!')
       return errors
     },
-    usernameErrors () {
+    usernameErrors() {
       const errors = []
       if (!this.$v.username.$dirty) return errors
       !this.$v.username.required && errors.push('El nombre y apellido es obligatorio')
       !this.$v.username.maxLength && errors.push('El nombre y apellido debe tener maximo 100 caracteres')
       return errors
     },
-    passwordErrors () {
+    passwordErrors() {
       const errors = []
       if (!this.$v.password.$dirty) return errors
       !this.$v.password.required && errors.push('La contraseña es obligatoria')
       !this.$v.password.maxLength && errors.push('La contraseña debe tener maximo 50 caracteres')
       return errors
     },
-    confirmationPasswordErrors () {
+    confirmationPasswordErrors() {
       const errors = []
       if (!this.$v.confirmationPassword.$dirty) return errors
       !this.$v.confirmationPassword.required && errors.push('La confirmación de la contraseña es obligatoria')
@@ -200,7 +203,7 @@ export default {
       !this.$v.confirmationPassword.maxLength && errors.push('La confinrmacion de la contraseña debe tener maximo 50 caracteres')
       return errors
     },
-    emailErrors () {
+    emailErrors() {
       const errors = []
       if (!this.$v.email.$dirty) return errors
       !this.$v.email.email && errors.push('El e-mail debe ser válido')
@@ -211,16 +214,16 @@ export default {
   },
 
   methods: {
-    async submit () {
+    async submit() {
       this.$v.$touch();
-      if ( !this.$v.$invalid) {
+      if (!this.$v.$invalid) {
         auth.createUserWithEmailAndPassword(this.email, this.password).then(cred => {
           cred.user.updateProfile({
             displayName: this.username
           }).then(async () => {
-            auth.currentUser.sendEmailVerification().then( () => {
+            auth.currentUser.sendEmailVerification().then(() => {
               console.log('verification sent')
-            }).catch( err => {
+            }).catch(err => {
               console.log(err.message)
             });
             await this.$router.push('/Home');
@@ -233,9 +236,9 @@ export default {
         })
       }
     },
-    async resendVerification(){
+    async resendVerification() {
     },
-    clear () {
+    clear() {
       this.$v.reset();
       this.username = '';
       this.email = '';
@@ -249,22 +252,22 @@ export default {
 
 <style scoped>
 
-#imgLogo{
+#imgLogo {
   margin: 0 auto;
 }
 
-.btnSubmitted{
+.btnSubmitted {
   width: 100%;
 }
 
-#submittedElems{
+#submittedElems {
   width: 50%;
   margin-left: 25%;
   margin-right: 25%;
 }
 
 
-#Fondo{
+#Fondo {
   background-image: url('https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/NL0L5N5Rgimkt8edi/videoblocks-a-repetition-a-young-group-of-people-playing-rock-music-and-talking-while-it_bjmcpoc92v_thumbnail-1080_01.png');
   background-size: 100% 100%;
   width: 100%;
@@ -276,7 +279,7 @@ export default {
   color: black;
 }
 
-#back{
+#back {
   margin: 1% 0 0 1%;
 }
 

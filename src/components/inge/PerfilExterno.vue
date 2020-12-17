@@ -2,14 +2,14 @@
 
     <v-container color="black" flat style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
       <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
-        <v-img :src="this.banner" contain style="padding-bottom: 0"/>
+        <v-img height="500px" width="100%" :src="this.banner" style="padding-bottom: 0"/>
 
         <div style="height: auto">
           <v-card-actions>
             <v-col cols="2">
               <v-btn style="padding-left: 40px" icon >
                 <v-avatar size="100%">
-                  <v-img contain style="size: initial" :src="this.profilePic"/>
+                  <v-img height="100px" width="100px" contain style="size: initial" :src="this.profilePic"/>
                 </v-avatar>
 
               </v-btn>
@@ -19,7 +19,7 @@
             <v-btn style="background-color: #4ad5e1;color: white" router :to="mensajes_link">
               <v-icon>mdi-forum</v-icon>
               Mandar mensaje</v-btn>
-            <v-btn  v-if="amigos === 3" @click="acceptFriend(true)">
+            <v-btn  v-if="amigos === 3"  @click="acceptFriend(true)">
               <v-icon>mdi-account-plus</v-icon>
               Aceptar</v-btn>
             <v-btn  v-if="amigos === 3" @click="acceptFriend(false)">
@@ -49,7 +49,7 @@
               <v-row>
               <v-col cols="1">
                 <a :href=this.ref_spotify v-if="this.ref_spotify.length > 0">
-                  <v-img style="size: initial" src="../../assets/spotify.png" />
+                  <v-img  style="size: initial" src="../../assets/spotify.png" />
                 </a>
 
               </v-col>
@@ -106,7 +106,7 @@
                     :key="item.date.seconds"
                 >
                   <v-list-item-icon>
-                    <v-img :src="item.url"></v-img>
+                    <v-img height="250px" width="250px" contain :src="item.url"></v-img>
                   </v-list-item-icon>
 
                   <v-list-item-content>
