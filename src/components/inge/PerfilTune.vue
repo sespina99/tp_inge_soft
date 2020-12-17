@@ -75,7 +75,7 @@
 
         <br>
         <v-card-title style="padding: 0" class="pl-2" contain>
-          <div>Actividad Reciente Ver mas</div>
+          <div>Actividad Reciente</div>
 
 
           <v-row justify="end">
@@ -146,9 +146,7 @@
 
 
         </v-card-title>
-        <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
-
-
+        <v-card-text style="font-size:16px; padding:0" class="pl-2" contain>
           <v-list three-line>
             <template v-for="(item, index) in actividades">
               <v-subheader
@@ -224,7 +222,7 @@
                     </v-list-item-content>
                   </v-list-item>
                 </template>
-                <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
+                <v-card-text style="font-size:16px;color: black; padding:0" class="pl-2" contain>
                   <v-card-actions style="padding-right: 3%;padding-left: 5%">
                     <div v-html="item.text">
                     </div>

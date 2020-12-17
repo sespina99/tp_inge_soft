@@ -82,7 +82,7 @@
                         <v-chip
                             :color="msg.me ? 'primary' : ''"
                             dark
-                            style="height:auto;white-space: normal;"
+                            style="width: fit-content;height:auto;white-space: normal;"
                             class="pa-4 mb-2"
                             v-on="on"
                         >
