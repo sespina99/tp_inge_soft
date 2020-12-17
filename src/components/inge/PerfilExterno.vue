@@ -2,7 +2,7 @@
 
     <v-container color="black" flat style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
       <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
-        <v-img height="500px" width="100%" :src="this.banner" style="padding-bottom: 0"/>
+        <v-img height="300px" width="100%" :src="this.banner" style="padding-bottom: 0"/>
 
         <div style="height: auto">
           <v-card-actions>

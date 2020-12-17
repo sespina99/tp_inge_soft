@@ -109,6 +109,7 @@
                 </v-row>
               </v-list-item-content>
             </v-list-item>
+
           </template>
 
           <v-card-text style="font-size:16px; padding:0; color: black"  contain>
@@ -116,13 +117,16 @@
               <div v-html="item.text">
               </div>
             </v-card-actions>
-            <div style="padding-bottom: 1%">
-              <v-img v-if="item.image" :src="item.image"
-                     aspect-ratio="1.5"
-                     max-height="500"
-                     contain
-              ></v-img>
-            </div>
+            <v-container>
+              <v-carousel>
+                <v-carousel-item v-for="image in images"
+                                 :key="image.alt"
+                                 style="height:200px"
+                                 :src="image.src"
+                                 :alt="image.alt">
+                </v-carousel-item>
+              </v-carousel>
+            </v-container>
 
           </v-card-text>
 
@@ -160,7 +164,7 @@ export default {
       orden: ['Reciente'],
       toggled: false,
       categories: ['Clasica','Rock','Pop','Metal','Jazz','Cumbia','Trap','Hip Hop','EDM','Tango','New Age','Funk','Punk','Rap','Elevator','Noise'],
-
+      images: [{ alt: 'A kitten', src: 'https://fondosmil.com/fondo/17009.jpg' },{ alt: 'A kitten', src: 'http://placekitten.com/200/300' },{ alt: 'A kitten', src: 'http://placekitten.com/200/300' }],
       items: [],
       lastPost: null,
       endPost:null,

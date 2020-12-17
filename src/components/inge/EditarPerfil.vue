@@ -15,7 +15,7 @@
         <v-card-text style="margin-top: 10px; margin-bottom: 10px;font-size:0.8em; padding:0" class="pl-2" contain>
           <h4>Imagen de fondo</h4>
           <input type="file" @change="uploadBanner" accept="image/*"/>
-          <v-img height="500px" :src="getBannerUrl">
+          <v-img height="300px" :src="getBannerUrl">
           </v-img>
         </v-card-text>
         <v-card-text style="font-size:0.8em; padding:0" class="pl-2" contain>
