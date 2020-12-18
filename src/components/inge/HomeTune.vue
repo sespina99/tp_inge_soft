@@ -52,7 +52,7 @@
 
 
             <v-col cols="auto" style="padding-top: 0">
-              <v-btn color="#47D6D7" :loading="btnLoading" v-if="emailVerified" @click="postBtn()">
+              <v-btn color="#47D6D7" style="color: white" :loading="btnLoading" v-if="emailVerified" @click="postBtn()">
                 Publicar
               </v-btn>
               <v-card-text v-if="!emailVerified">Tiene que verificar el email para postear</v-card-text>
@@ -131,7 +131,7 @@
     <v-row>
 <v-spacer></v-spacer>
       <v-col cols="2">
-        <v-btn style="margin-bottom: 2%;background-color: #4AD5E1;color: white" @click="morePost" v-if="this.hasMorePost">Más publicaciones</v-btn>
+        <v-btn :loading="btnLoading2" style="margin-bottom: 10%;background-color: #4AD5E1;color: white" @click="morePost" v-if="this.hasMorePost">Más publicaciones</v-btn>
       </v-col>
 <v-spacer></v-spacer>
     </v-row>
@@ -147,10 +147,9 @@ import { auth, db, storage} from "@/db";
 export default {
   data() {
     return {
-
       mensajes_link:'/Mensajes',
       perfil_link: '/Perfil',
-	perfil_ext_link: '/PerfilExterno',
+      perfil_ext_link: '/PerfilExterno',
       text: '',
       anuncio: '',
       orden: ['Reciente'],
@@ -165,7 +164,8 @@ export default {
       foto: '',
       emailVerified: true,
       currentUsr: '',
-      btnLoading: false
+      btnLoading: false,
+      btnLoading2: false
     }
   },
   async beforeMount() {
@@ -205,9 +205,9 @@ export default {
           console.log(err)
         })
       })
-
-
+      this.btnLoading2 = true
       await this.getPosts(this.items);
+      this.btnLoading2 = false
       /*for(const item in this.items){
           item.timestr = this.formatDate(item.time)
       }*/
@@ -258,9 +258,10 @@ export default {
         console.log(e)
       }
     },
-    morePost(){
-      this.getPosts(this.items)
-      console.log(this.items)
+    async morePost(){
+      this.btnLoading2 = true
+      await this.getPosts(this.items)
+      this.btnLoading2 = false
     },
     formatDate (today) {
       const date = today.toISOString().substr(0, 10)

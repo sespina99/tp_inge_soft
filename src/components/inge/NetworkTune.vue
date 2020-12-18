@@ -41,9 +41,11 @@
                   v-else-if="index < maxPending"
                   :key="item.title"
               >
-                <v-avatar size="70">
-                  <v-img  :src="item.avatar"></v-img>
-                </v-avatar>
+                <v-btn icon x-large right router @click="clickProfile(item.uid)">
+                  <v-avatar size="70">
+                    <v-img  :src="item.avatar"></v-img>
+                  </v-avatar>
+                </v-btn>
 
                 <v-list-item-content>
                   <v-row>
@@ -128,9 +130,11 @@
                   v-else-if="index < maxFriend"
                   :key="item.title"
               >
-                <v-avatar size="70">
-                  <v-img  :src="item.avatar"></v-img>
-                </v-avatar>
+                <v-btn icon x-large right router @click="clickProfile(item.uid)">
+                  <v-avatar size="70">
+                    <v-img  :src="item.avatar"></v-img>
+                  </v-avatar>
+                </v-btn>
 
                 <v-list-item-content>
                   <v-row>
@@ -155,18 +159,7 @@
 
             </template>
           </v-list>
-          <v-btn v-if="!isMaxFriend" @click="moreFriends">mas amigos</v-btn>
-
-
-
-
-
-
-
-
-
-
-
+          <v-btn v-if="!isMaxFriend" @click="moreFriends">Más amigos</v-btn>
 
         </v-card-text>
 
@@ -197,6 +190,8 @@ solicitudes_abierto: true,
       maxPending: 0,
       isMaxPending: true,
       requests: [],
+      perfil_link: '/Perfil',
+      perfil_ext_link: '/PerfilExterno',
     }
   }, async beforeMount() {
     await this.getFriends(this.friends)
@@ -210,39 +205,13 @@ solicitudes_abierto: true,
     async contactBtn(uid){
       await this.$router.push({path: '/Mensajes', query:{uid: uid}});
     },
-    /*async deleteFriend(uid){
-      try {
-        let friends
-        let index
-        const docCurrent = await db.collection('friends').doc(auth.currentUser.uid)
-        const docFriend = db.collection('friends').doc(uid)
-        docCurrent.get().then(async (elem) => {
-          const data = await elem.data()
-          friends = data.friends
-          index = friends.indexOf(uid)
-          friends.splice(index,1)
-        }).then(() => {
-          docCurrent.update({
-            friends: friends
-          })
-        })
-        docFriend.get().then(async (elem) => {
-          const data = await elem.data()
-          friends = data.friends
-          index = friends.indexOf(uid)
-          friends.splice(index,1)
-        }).then(() => {
-          docFriend.update({
-            friends: friends
-          })
-        }).finally(async ()=>{
-          await this.reloadData()
-        })
-      }catch(e){
-        console.log(e.message)
+    async clickProfile(uid){
+      if(uid === auth.currentUser.uid){
+        await this.$router.push(this.perfil_link);
+      }else{
+        await this.$router.push({path: this.perfil_ext_link, query:{uid: uid}});
       }
-
-    },*/
+    },
     moreFriends(){
       this.maxFriend += 5
       if(this.maxFriend >= this.friends.length)

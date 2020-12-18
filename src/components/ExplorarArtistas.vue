@@ -16,7 +16,8 @@
           <v-row>
             <li v-for="category in categories" v-bind:key="category">
               <v-col cols="1">
-                <v-btn @click="clickBtn(category)">{{ category }}</v-btn>
+                <v-btn @click="clickBtn(category)" v-if="cat !== category">{{ category }}</v-btn>
+                <v-btn style="background-color: #4AD5E1" @click="clickBtn(category)" v-if="cat === category">{{ category }}</v-btn>
               </v-col>
             </li>
           </v-row>
@@ -44,9 +45,12 @@
                   v-else
                   :key="item.title"
               >
-                <v-avatar size="70">
-                  <v-img  :src="item.avatar"></v-img>
-                </v-avatar>
+                <v-btn icon x-large right router @click="clickProfile(item.uid)">
+                  <v-avatar size="70">
+                    <v-img  :src="item.avatar"></v-img>
+                  </v-avatar>
+                </v-btn>
+
 
                 <v-list-item-content>
                   <v-row>
@@ -92,7 +96,7 @@
     <v-row>
       <v-spacer></v-spacer>
       <v-col cols="2">
-        <v-btn style="margin-bottom: 2%;background-color: #4AD5E1;color: white" @click="moreUsr" v-if="this.hasMoreUsr">Más usuarios</v-btn>
+        <v-btn style="margin-bottom: 10%;background-color: #4AD5E1;color: white" @click="moreUsr" v-if="this.hasMoreUsr && this.items.length !== 0" :loading="btnLoading">Más usuarios</v-btn>
       </v-col>
       <v-spacer></v-spacer>
     </v-row>
@@ -112,13 +116,16 @@ export default {
       numAA: 1,
       orden: ['Reciente', 'Nombre'],
       toggled: false,
-      categories: ['Clasica', 'Rock', 'Pop', 'Metal', 'Jazz', 'Cumbia', 'Trap', 'Hip Hop', 'EDM', 'Tango', 'New Age', 'Funk', 'Punk', 'Rap', 'Elevator', 'Noise'],
+      categories: ['Clásica', 'Rock', 'Pop', 'Metal', 'Jazz', 'Cumbia', 'Trap', 'Hip Hop', 'EDM', 'Tango', 'New Age', 'Funk', 'Punk', 'Rap', 'Elevator', 'Noise'],
       items: [],
       lastUsr: null,
       endUsr: null,
       hasMoreUsr: true,
       cat: null,
-      searchUsr: ''
+      searchUsr: '',
+      perfil_link: '/Perfil',
+      perfil_ext_link: '/PerfilExterno',
+      btnLoading: false,
     }
   },
   async beforeMount() {
@@ -139,6 +146,13 @@ export default {
         async contactBtn(uid){
           await this.$router.push({path: '/Mensajes', query:{uid: uid}});
         },
+        async clickProfile(uid){
+          if(uid === auth.currentUser.uid){
+            await this.$router.push(this.perfil_link);
+          }else{
+            await this.$router.push({path: this.perfil_ext_link, query:{uid: uid}});
+          }
+        },
         async reloadData() {
           try {
             this.items = [];
@@ -152,9 +166,10 @@ export default {
             console.log(e)
           }
         },
-        moreUsr(){
-
-          this.getUsr(this.items)
+        async moreUsr(){
+          this.btnLoading = true
+          await this.getUsr(this.items)
+          this.btnLoading = false
         },
         clickBtn(a){
           console.log(a)

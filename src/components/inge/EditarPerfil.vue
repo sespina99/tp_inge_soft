@@ -140,7 +140,7 @@
           <v-row>
             <v-divider></v-divider>
             <v-btn style="background-color: #4AD5E1;alignment: center;margin-bottom: 2%;color: white" text x-large
-                   width="60%" @click="submit()">
+                   width="60%" @click="submit()" :loading="btnLoading">
               Confirmar cambios
             </v-btn>
             <v-divider></v-divider>
@@ -196,6 +196,7 @@ export default {
       instrumentos: '',
       generos: '',
       acerca: '',
+      btnLoading: false,
       appleRule: [
         v => !v || v.startsWith('https://music.apple.com/ar/artist/') || 'Link invalido'
       ],
@@ -264,6 +265,7 @@ export default {
   },
   methods: {
     async submit() {
+      this.btnLoading = true
       if (this.$refs.form.validate()) {
         let prof = ''
         let ban = ''
@@ -296,10 +298,12 @@ export default {
         }).catch(err => {
           console.log(err)
         }).then(async () => {
+          this.btnLoading = false;
           await this.$router.push('/Perfil');
         })
       } else {
         console.log('no funciona asi pá...')
+        this.btnLoading = false;
       }
     },
     uploadProfilePic(event) {
@@ -308,7 +312,6 @@ export default {
     uploadBanner(event) {
       this.banner = event.target.files[0]
     }
-
   }
 
 }

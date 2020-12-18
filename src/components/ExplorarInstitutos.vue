@@ -36,9 +36,12 @@
                   :key="item.title"
               >
                 <v-list-item-icon>
-                  <v-avatar>
-                    <v-img :src="item.avatar"></v-img>
-                  </v-avatar>
+                  <v-btn icon x-large right router @click="clickProfile(item.uid)">
+                    <v-avatar>
+                      <v-img :src="item.avatar"></v-img>
+                    </v-avatar>
+                  </v-btn>
+
                 </v-list-item-icon>
 
                 <v-list-item-content>
@@ -70,6 +73,13 @@
       </div>
 
     </v-card>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols="2">
+        <v-btn :loading="btnLoading" style="margin-bottom: 10%;background-color: #4AD5E1;color: white" @click="moreUsr" v-if="this.hasMoreUsr && this.items.length !== 0" >Más usuarios</v-btn>
+      </v-col>
+      <v-spacer></v-spacer>
+    </v-row>
   </v-container>
 
 </template>
@@ -89,6 +99,9 @@ export default {
       endUsr: null,
       hasMoreUsr: true,
       searchUsr: '',
+      perfil_link: '/Perfil',
+      perfil_ext_link: '/PerfilExterno',
+      btnLoading: false,
     }
   },
   created() {
@@ -114,6 +127,18 @@ export default {
   methods:{
     async contactBtn(uid){
       await this.$router.push({path: '/Mensajes', query:{uid: uid}});
+    },
+    async moreUsr(){
+      this.btnLoading = true
+      await this.getUsr(this.items)
+      this.btnLoading = false
+    },
+    async clickProfile(uid){
+      if(uid === auth.currentUser.uid){
+        await this.$router.push(this.perfil_link);
+      }else{
+        await this.$router.push({path: this.perfil_ext_link, query:{uid: uid}});
+      }
     },
     async reloadData() {
       try {

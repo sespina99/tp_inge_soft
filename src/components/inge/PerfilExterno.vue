@@ -189,7 +189,7 @@
       <v-row>
         <v-spacer></v-spacer>
         <v-col cols="2">
-          <v-btn style="margin-bottom: 2%;background-color: #4AD5E1;color: white" @click="morePost" v-if="this.hasMorePost">Más publicaciones</v-btn>
+          <v-btn style="margin-bottom: 10%;background-color: #4AD5E1;color: white" @click="morePost" v-if="this.hasMorePost" :loading="btnLoading">Más publicaciones</v-btn>
         </v-col>
         <v-spacer></v-spacer>
       </v-row>
@@ -231,7 +231,8 @@ export default {
       items: [],
       hasMorePost: true,
       endPost: null,
-      lastPost: null
+      lastPost: null,
+      btnLoading: false,
     }
   },
   async beforeMount() {
@@ -411,8 +412,10 @@ export default {
       })
       await this.reloadData()
     },
-    morePost(){
-      this.getPosts(this.items)
+    async morePost() {
+      this.btnLoading = true
+      await this.getPosts(this.items)
+      this.btnLoading = false
     },
     formatDate (today) {
       const date = today.toISOString().substr(0, 10)

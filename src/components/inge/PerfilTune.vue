@@ -2,6 +2,12 @@
 
   <v-container color="black" flat
                style="padding-right: 0; margin-left: 0;margin-bottom: 0;margin-right: 0;margin-top: 0" fluid>
+    <v-snackbar   v-model="snackbarError" :timeout="10000" dark top color="error">
+      <span class="black--text" >Debe llenar todos los campos para guardar la actividad</span>
+      <template justify-right v-slot:action>
+        <v-btn text class="error" @click="snackbarError = false">Close</v-btn>
+      </template>
+    </v-snackbar>
     <v-card class="mx-auto" max-width="50%" style="margin-bottom: 20px">
 
       <v-img height="300px" width="100%" :src="this.banner" style="padding-bottom: 0"/>
@@ -9,13 +15,10 @@
       <div style="height: auto">
         <v-card-actions>
           <v-col cols="2">
-            <v-btn style="padding-left: 40px" icon>
               <v-avatar size="100%">
-
                 <v-img height="100px" width="100px" contain style="size: initial" :src="this.profilePic"/>
               </v-avatar>
 
-            </v-btn>
           </v-col>
           <v-spacer></v-spacer>
 
@@ -162,8 +165,8 @@
               ></v-divider>
 
               <v-list-item
-                  v-else-if="index <= 3"
-                  :key="item.date.seconds"
+                  v-else-if="index < 5"
+                  :key="index"
               >
                 <v-list-item-icon>
                   <v-img height="200px" width="300px" :src="item.url"></v-img>
@@ -249,8 +252,8 @@
     <v-row>
       <v-spacer></v-spacer>
       <v-col cols="2">
-        <v-btn style="margin-bottom: 2%;background-color: #4AD5E1;color: white" @click="morePost"
-               v-if="this.hasMorePost">Más publicaciones
+        <v-btn :loading="btnLoading" style="margin-bottom: 10%;background-color: #4AD5E1;color: white" @click="morePost"
+               v-if="this.hasMorePost && this.items.length !== 0">Más publicaciones
         </v-btn>
       </v-col>
       <v-spacer></v-spacer>
@@ -288,7 +291,9 @@ export default {
       items: [],
       hasMorePost: true,
       endPost: null,
-      lastPost: null
+      lastPost: null,
+      snackbarError: false,
+      btnLoading: false,
     }
   },
   async beforeMount() {
@@ -305,8 +310,10 @@ export default {
     }
   },
   methods: {
-    morePost() {
-      this.getPosts(this.items)
+    async morePost() {
+      this.btnLoading = true
+      await this.getPosts(this.items)
+      this.btnLoading = false
     },
     formatDate(today) {
       const date = today.toISOString().substr(0, 10)
@@ -349,161 +356,60 @@ export default {
         console.log('es null pá')
       }
     },
-    startBd(){
-      const message1 = []
-      const message2 = []
-      const message3 = []
-      const message4 = []
-      message1.push({
-        date: Date.now(),
-        message: 'hola pa',
-        me: true
-      })
-      message1.push({
-        date: Date.now(),
-        message: 'que onda bro',
-        me: false
-      })
-      message1.push({
-        date: Date.now(),
-        message: 'todo bien?',
-        me: false
-      })
-      message1.push({
-        date: Date.now(),
-        message: 'bien vos?',
-        me: true
-      })
-
-
-      message2.push({
-        date: Date.now(),
-        message: 'hola pa',
-        me: false
-      })
-      message2.push({
-        date: Date.now(),
-        message: 'que onda bro',
-        me: true
-      })
-      message2.push({
-        date: Date.now(),
-        message: 'todo bien?',
-        me: true
-      })
-      message2.push({
-        date: Date.now(),
-        message: 'bien vos?',
-        me: false
-      })
-
-      message3.push({
-        date: Date.now(),
-        message: 'que pasa bro',
-        me: false
-      })
-      message3.push({
-        date: Date.now(),
-        message: 'que onda pa',
-        me: true
-      })
-      message3.push({
-        date: Date.now(),
-        message: 'todo piola?',
-        me: true
-      })
-      message3.push({
-        date: Date.now(),
-        message: 'sisi vos?',
-        me: false
-      })
-
-      message4.push({
-        date: Date.now(),
-        message: 'que pasa bro',
-        me: true
-      })
-      message4.push({
-        date: Date.now(),
-        message: 'que onda pa',
-        me: false
-      })
-      message4.push({
-        date: Date.now(),
-        message: 'todo piola?',
-        me: false
-      })
-      message4.push({
-        date: Date.now(),
-        message: 'sisi vos?',
-        me: true
-      })
-
-      db.collection('chats').doc(auth.currentUser.uid + 'NyQt9JKHGcPbfki5UteLsfWJsUf1').set({
-        messages: message1,
-        uidTo: 'NyQt9JKHGcPbfki5UteLsfWJsUf1',
-        uidFrom: auth.currentUser.uid
-      })
-      db.collection('chats').doc('NyQt9JKHGcPbfki5UteLsfWJsUf1' + auth.currentUser.uid).set({
-        messages: message2,
-        uidTo: auth.currentUser.uid,
-        uidFrom: 'NyQt9JKHGcPbfki5UteLsfWJsUf1'
-      })
-
-
-      db.collection('chats').doc(auth.currentUser.uid + 'EiJByIl4nvTLJ6jUaa6xAy2Waim1').set({
-        messages: message3,
-        uidTo: 'EiJByIl4nvTLJ6jUaa6xAy2Waim1',
-        uidFrom: auth.currentUser.uid
-      })
-      db.collection('chats').doc('EiJByIl4nvTLJ6jUaa6xAy2Waim1' + auth.currentUser.uid).set({
-        messages: message4,
-        uidTo: auth.currentUser.uid,
-        uidFrom: 'EiJByIl4nvTLJ6jUaa6xAy2Waim1'
-      })
-    },
     updateActivities() {
-      this.dialog = false;
-      console.log(this.nuevaFecha);
-      db.collection('users').doc(auth.currentUser.uid).get().then(elem => {
-        const activ = elem.data().activities;
-        let len = 0;
-        if (activ !== undefined) {
-          len = activ.length
-        }
-        let auxUrl;
-        if (this.nuevaImagen.type !== undefined) {
-          storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').put(this.nuevaImagen, {contentType: this.nuevaImagen.type}).then(() => {
-            storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').getDownloadURL().then(url => {
-              auxUrl = url;
-            }).then(() => {
-              const dia = new Date(this.nuevaFecha)
-              const aux = {
-                place: this.nuevaInstitucion,
-                date: dia,
-                url: auxUrl,
-                datestr: this.formatDate(dia),
-              }
-              this.actividades.push(aux);
-              db.collection('users').doc(auth.currentUser.uid).update({
-                activities: this.actividades
+      if(this.nuevaImagen.type !== undefined && this.nuevaFecha !== '' && this.nuevaInstitucion !== '') {
+        this.dialog = false;
+        db.collection('users').doc(auth.currentUser.uid).get().then(elem => {
+          const activ = elem.data().activities;
+          let len = 0;
+          if (activ !== undefined) {
+            len = activ.length
+          }
+          let auxUrl;
+          if (this.nuevaImagen.type !== undefined) {
+            storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').put(this.nuevaImagen, {contentType: this.nuevaImagen.type}).then(() => {
+              storage.ref('users/' + auth.currentUser.uid + '/activities/' + len + '.png').getDownloadURL().then(url => {
+                auxUrl = url;
+              }).then(() => {
+                const dia = new Date(this.nuevaFecha)
+                const aux = {
+                  place: this.nuevaInstitucion,
+                  date: dia,
+                  url: auxUrl,
+                  datestr: this.formatDate(dia),
+                }
+                this.actividades.push(aux);
+
+                this.actividades.sort((a, b) => {
+                  if( a.date > b.date )
+                    return -1
+                  if ( a.date === b.date)
+                    return 0
+                  return 1
+                })
+                db.collection('users').doc(auth.currentUser.uid).update({
+                  activities: this.actividades
+                }).catch(err => {
+                  console.log(err.message);
+                }).finally(() => {
+                  this.nuevaFecha = ''
+                  this.nuevaImagen = ''
+                  this.nuevaInstitucion = ''
+                })
               }).catch(err => {
-                console.log(err.message);
-              }).finally(() => {
-                this.nuevaFecha = ''
-                this.nuevaImagen = ''
-                this.nuevaInstitucion = ''
+                console.log(err.message)
               })
             }).catch(err => {
-              console.log(err.message)
-            })
-          }).catch(err => {
-            console.log(err.message);
-          });
-        }
-      }).catch(err => {
-        console.log(err.message)
-      })
+              console.log(err.message);
+            });
+          }
+        }).catch(err => {
+          console.log(err.message)
+        })
+      }
+      else{
+        this.snackbarError = true
+      }
     },
     uploadImage(event) {
       this.nuevaImagen = event.target.files[0];
@@ -526,6 +432,13 @@ export default {
       this.banner = data.banner;
       this.actividades = data.activities;
 
+      this.actividades.sort((a, b) => {
+        if( a.date > b.date )
+          return -1
+        if ( a.date === b.date)
+          return 0
+        return 1
+      })
     }).catch(async e => {
       this.created = e.message;
       const url = await storage.ref('users/start/profile.jpg').getDownloadURL()
